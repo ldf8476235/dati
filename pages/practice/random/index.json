@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "随机练习",
+  "usingComponents": {
+    "app-nav": "/components/app-nav/app-nav"
+  }
+}

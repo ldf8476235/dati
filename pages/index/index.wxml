@@ -1,0 +1,54 @@
+<app-nav title="刷题宝"></app-nav>
+<scroll-view class="home-scroll" scroll-y type="list">
+<view class="page home-page">
+  <view wx:if="{{loading}}" class="empty">正在加载题库...</view>
+
+  <block wx:else>
+    <view class="paper-card">
+      <view class="paper-side">
+        <picker value="{{levelIndex}}" range="{{levelNames}}" bindchange="onLevelChange">
+          <view class="level-chip">
+            <text>{{levelNames[levelIndex] || '选择等级'}}</text>
+            <text class="level-arrow">⌄</text>
+          </view>
+        </picker>
+      </view>
+      <view class="paper-head">
+        <view class="paper-copy">
+          <view class="paper-title">长期照护师理论考试模拟题</view>
+          <view class="paper-desc">
+            <view class="paper-desc-line">理论必刷题，考试一次过。</view>
+            <view>专业团队精研，题库持续更新。</view>
+          </view>
+          <view class="paper-tags">
+            <text class="paper-tag">{{levels[levelIndex].stageName || '官方题库'}}</text>
+            <text class="paper-tag">持续更新</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="info-panel">
+        <view class="info-row">
+          <text class="info-icon">更新</text>
+          <text class="info-text">{{home.updateDate}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-icon">题量</text>
+          <text class="info-text">{{home.stats.totalQuestions}} 题</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="entry-grid">
+      <view wx:for="{{entries}}" wx:key="key" class="entry" data-key="{{item.key}}" bindtap="goEntry">
+        <image class="entry-icon" src="{{item.icon}}" mode="aspectFit"></image>
+        <view class="entry-copy">
+          <view class="entry-title">{{item.title}}</view>
+          <view class="entry-desc">{{item.desc}}</view>
+        </view>
+        <view class="entry-arrow">›</view>
+      </view>
+    </view>
+  </block>
+</view>
+</scroll-view>

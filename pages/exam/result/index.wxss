@@ -1,0 +1,101 @@
+.score-card {
+  padding: 36rpx;
+  text-align: center;
+}
+
+.score {
+  margin: 12rpx 0;
+  color: #003fa3;
+  font-size: 96rpx;
+  line-height: 112rpx;
+  font-weight: 900;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
+  margin-top: 22rpx;
+}
+
+.summary-item {
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: #ffffff;
+  text-align: center;
+}
+
+.summary-num {
+  display: block;
+  font-size: 42rpx;
+  font-weight: 900;
+}
+
+.summary-num.ok,
+.ok-text {
+  color: #2e7d32;
+}
+
+.summary-num.bad,
+.bad-text {
+  color: #ba1a1a;
+}
+
+.summary-label {
+  display: block;
+  margin-top: 6rpx;
+  color: #687082;
+  font-size: 24rpx;
+}
+
+.detail-title {
+  margin-top: 32rpx;
+  margin-bottom: 18rpx;
+}
+
+.detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  padding-bottom: 130rpx;
+}
+
+.detail-item {
+  padding: 26rpx;
+}
+
+.detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 900;
+}
+
+.detail-question {
+  margin: 18rpx 0;
+  font-size: 28rpx;
+  line-height: 42rpx;
+  font-weight: 700;
+}
+
+.answer-row {
+  margin-top: 8rpx;
+  color: #434653;
+  font-size: 26rpx;
+}
+
+.analysis {
+  margin-top: 12rpx;
+  color: #687082;
+  line-height: 38rpx;
+}
+
+.bottom-actions {
+  position: fixed;
+  left: 32rpx;
+  right: 32rpx;
+  bottom: calc(24rpx + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+}

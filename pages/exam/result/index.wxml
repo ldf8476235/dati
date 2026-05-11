@@ -1,0 +1,38 @@
+<view class="page result-page">
+  <app-nav title="考试结果" back-home="{{true}}"></app-nav>
+  <view class="card score-card">
+    <view class="muted">{{result.levelName}}</view>
+    <view class="score">{{result.score}}</view>
+    <view class="muted">总分 {{result.totalScore}} · 用时 {{usedText}}</view>
+  </view>
+
+  <view class="summary">
+    <view class="summary-item">
+      <text class="summary-num ok">{{correctCount}}</text>
+      <text class="summary-label">正确</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-num bad">{{wrongCount}}</text>
+      <text class="summary-label">错误</text>
+    </view>
+  </view>
+
+  <view class="section-title detail-title">答题明细</view>
+  <view class="detail-list">
+    <view wx:for="{{detailItems}}" wx:key="id" class="card detail-item">
+      <view class="detail-head">
+        <text class="tag">第 {{item.displayIndex}} 题</text>
+        <text class="{{item.correct ? 'ok-text' : 'bad-text'}}">{{item.correct ? '正确' : '错误'}}</text>
+      </view>
+      <view class="detail-question">{{item.content}}</view>
+      <view class="answer-row">你的答案：{{item.userAnswerText}}</view>
+      <view class="answer-row">正确答案：{{item.correctAnswerText}}</view>
+      <view wx:if="{{item.analysis}}" class="analysis">{{item.analysis}}</view>
+    </view>
+  </view>
+
+  <view class="bottom-actions">
+    <button class="ghost-button" bindtap="goHistory">考试历史</button>
+    <button class="primary-button" bindtap="goHome">返回首页</button>
+  </view>
+</view>

@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "模拟考试",
+  "usingComponents": {
+    "app-nav": "/components/app-nav/app-nav"
+  }
+}

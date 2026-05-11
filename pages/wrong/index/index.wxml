@@ -1,0 +1,46 @@
+<view class="page">
+  <app-nav title="我的错题" back-home="{{true}}"></app-nav>
+  <view class="header">
+    <view>
+      <view class="section-title">我的错题</view>
+      <view class="muted">共 {{total}} 道需要回看</view>
+    </view>
+  </view>
+
+  <view class="filters">
+    <picker value="{{levelIndex}}" range="{{levelNames}}" bindchange="onLevelChange">
+      <view class="picker-control">{{levelNames[levelIndex] || '选择等级'}}</view>
+    </picker>
+    <view class="segmented">
+      <view wx:for="{{types}}" wx:key="value" bindtap="onTypeTap" data-type="{{item.value}}" class="segment {{type === item.value ? 'active' : ''}}">{{item.label}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty">正在加载错题...</view>
+  <view wx:elif="{{active}}" class="detail">
+    <button class="back-link" bindtap="closeQuestion">返回列表</button>
+    <view class="card question-card">
+      <view class="question-meta">
+        <text class="tag">{{active.typeLabel}}</text>
+        <text class="muted">错 {{active.wrongCount}} 次</text>
+      </view>
+      <view class="question-content">{{active.content}}</view>
+    </view>
+    <view class="options">
+      <button wx:for="{{active.optionItems}}" wx:key="value" class="option {{selected === item.value ? 'selected' : ''}} {{result && result.correctAnswer === item.value ? 'correct' : ''}} {{result && selected === item.value && !result.correct ? 'wrong' : ''}}" data-value="{{item.value}}" bindtap="selectAnswer">{{item.label}}</button>
+    </view>
+    <view wx:if="{{result}}" class="card result-card {{result.correct ? 'ok' : 'bad'}}">
+      <view class="result-title">{{result.correct ? '回答正确' : '回答错误'}}</view>
+      <view>正确答案：{{result.correctAnswer === 'true' ? '正确' : result.correctAnswer === 'false' ? '错误' : result.correctAnswer}}</view>
+      <view wx:if="{{result.analysis}}" class="analysis">{{result.analysis}}</view>
+    </view>
+    <button wx:if="{{!result}}" class="primary-button submit" bindtap="submitAnswer">提交答案</button>
+  </view>
+  <view wx:elif="{{!items.length}}" class="empty">当前筛选下暂无错题</view>
+  <view wx:else class="list">
+    <button wx:for="{{items}}" wx:key="id" class="card list-item" data-index="{{index}}" bindtap="openQuestion">
+      <view class="item-title">{{item.content}}</view>
+      <view class="item-meta">错 {{item.wrongCount}} 次 · {{item.typeLabel}}</view>
+    </button>
+  </view>
+</view>

@@ -1,0 +1,85 @@
+<view class="practice-shell {{darkMode ? 'practice-dark' : ''}}" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
+  <app-nav title="顺序练习" back-home="{{true}}"></app-nav>
+
+  <view wx:if="{{loading}}" class="empty">正在加载题目...</view>
+  <view wx:elif="{{!questions.length}}" class="empty">当前条件下暂无题目</view>
+
+  <block wx:else>
+    <view class="question-area font-{{fontSize}} {{slideClass}}">
+      <view class="question-title">
+        <text>{{questions[current].content}}（　）。</text>
+        <text class="question-hint">（{{questions[current].typeHint}}）</text>
+      </view>
+
+      <view class="option-list">
+        <view wx:for="{{questions[current].optionItems}}" wx:key="value" class="answer-option {{selected === item.value ? 'selected' : ''}} {{result && result.correctAnswer === item.value ? 'correct' : ''}} {{result && selected === item.value && !result.correct ? 'wrong' : ''}}" data-value="{{item.value}}" bindtap="selectAnswer">
+          <view class="option-letter">{{item.value === 'true' ? '√' : item.value === 'false' ? '×' : item.value}}</view>
+          <view class="option-text">{{item.displayLabel}}</view>
+        </view>
+      </view>
+
+      <view wx:if="{{result}}" class="explain-panel {{result.correct ? 'ok' : 'bad'}}">
+        <view class="explain-title">{{result.correct ? '回答正确' : '回答错误'}}</view>
+        <view>正确答案：{{result.correctAnswer === 'true' ? '正确' : result.correctAnswer === 'false' ? '错误' : result.correctAnswer}}</view>
+        <view wx:if="{{result.analysis}}" class="analysis">{{result.analysis}}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{showSheet || showSettings}}" class="panel-mask" bindtap="closePanels"></view>
+
+    <view wx:if="{{showSheet}}" class="question-sheet">
+      <scroll-view scroll-y class="question-grid" enhanced="{{true}}" show-scrollbar="{{false}}">
+        <view class="question-grid-content">
+          <view wx:for="{{questions}}" wx:key="id" class="question-num {{current === index ? 'active' : ''}} {{answers[item.id] ? answers[item.id].status : ''}}" data-index="{{index}}" bindtap="onQuestionTap">{{index + 1}}</view>
+        </view>
+      </scroll-view>
+      <view class="sheet-actions">
+        <view class="sheet-button" bindtap="resetAnswers">重新答题</view>
+        <view class="sheet-button" bindtap="toggleSheet">⌄ 收起</view>
+      </view>
+    </view>
+
+    <view wx:if="{{showSettings}}" class="settings-panel">
+      <view class="setting-row">
+        <text>答对跳转下一题</text>
+        <switch checked="{{autoNext}}" color="#0b5bd3" bindchange="toggleAutoNext"></switch>
+      </view>
+      <view class="setting-row">
+        <text>开启背题模式</text>
+        <switch checked="{{darkMode}}" color="#0b5bd3" bindchange="toggleDarkMode"></switch>
+      </view>
+      <view class="setting-row">
+        <text>选项乱序</text>
+        <switch checked="{{optionOrder}}" color="#0b5bd3" bindchange="toggleOptionOrder"></switch>
+      </view>
+      <view class="setting-row font-row">
+        <text>字体大小</text>
+        <view class="font-options">
+          <text class="{{fontSize === 'small' ? 'active' : ''}}" data-size="small" bindtap="chooseFontSize">小号</text>
+          <text class="{{fontSize === 'normal' ? 'active' : ''}}" data-size="normal" bindtap="chooseFontSize">标准</text>
+          <text class="{{fontSize === 'large' ? 'active' : ''}}" data-size="large" bindtap="chooseFontSize">大号</text>
+          <text class="{{fontSize === 'xlarge' ? 'active' : ''}}" data-size="xlarge" bindtap="chooseFontSize">特大</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="practice-tabbar">
+      <view class="tool-item" bindtap="toggleSettings">
+        <view class="tool-icon">⚙</view>
+        <view>设置</view>
+      </view>
+      <view class="score-item right-score">
+        <view class="score-dot blue"></view>
+        <view>{{rightCount}}</view>
+      </view>
+      <view class="score-item wrong-score">
+        <view class="score-dot red"></view>
+        <view>{{wrongCount}}</view>
+      </view>
+      <view class="tool-item question-entry" bindtap="toggleSheet">
+        <view class="grid-icon"></view>
+        <view>{{current + 1}}/{{questions.length}}</view>
+      </view>
+    </view>
+  </block>
+</view>

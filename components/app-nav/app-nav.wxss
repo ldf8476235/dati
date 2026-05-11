@@ -1,0 +1,40 @@
+.app-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #ffffff;
+  box-shadow: 0 1rpx 0 rgba(16, 24, 40, 0.06);
+}
+
+.app-nav-title {
+  color: #202631;
+  font-size: 32rpx;
+  font-weight: 900;
+  text-align: center;
+}
+
+.app-nav-left {
+  position: fixed;
+  left: 22rpx;
+  z-index: 60;
+  width: 72rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.app-nav-back {
+  color: #202631;
+  font-size: 52rpx;
+  line-height: 52rpx;
+  font-weight: 300;
+  transform: translateY(-2rpx);
+}

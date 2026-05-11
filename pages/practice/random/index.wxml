@@ -1,0 +1,41 @@
+<view class="page practice-page">
+  <app-nav title="随机练习" back-home="{{true}}"></app-nav>
+  <view class="header">
+    <view>
+      <view class="section-title">{{title}}</view>
+      <view class="muted">第 {{current + 1}} / {{questions.length}} 题</view>
+    </view>
+    <button class="mini-button" bindtap="loadQuestions">换一组</button>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty">正在抽取题目...</view>
+  <view wx:elif="{{!questions.length}}" class="empty">当前条件下暂无题目</view>
+
+  <block wx:else>
+    <view class="card question-card">
+      <view class="question-meta">
+        <text class="tag">{{questions[current].typeLabel}}</text>
+        <text class="muted">随机题</text>
+      </view>
+      <view class="question-content">{{questions[current].content}}</view>
+    </view>
+
+    <view class="options">
+      <button wx:for="{{questions[current].optionItems}}" wx:key="value" class="option {{selected === item.value ? 'selected' : ''}} {{result && result.correctAnswer === item.value ? 'correct' : ''}} {{result && selected === item.value && !result.correct ? 'wrong' : ''}}" data-value="{{item.value}}" bindtap="selectAnswer">
+        <text>{{item.label}}</text>
+      </button>
+    </view>
+
+    <view wx:if="{{result}}" class="card result-card {{result.correct ? 'ok' : 'bad'}}">
+      <view class="result-title">{{result.correct ? '回答正确' : '回答错误'}}</view>
+      <view>正确答案：{{result.correctAnswer === 'true' ? '正确' : result.correctAnswer === 'false' ? '错误' : result.correctAnswer}}</view>
+      <view wx:if="{{result.analysis}}" class="analysis">{{result.analysis}}</view>
+      <view class="muted">累计错题次数：{{result.wrongCount}}</view>
+    </view>
+
+    <view class="actions single">
+      <button wx:if="{{!result}}" class="primary-button" bindtap="submitAnswer">提交答案</button>
+      <button wx:else class="primary-button" bindtap="nextQuestion">下一题</button>
+    </view>
+  </block>
+</view>

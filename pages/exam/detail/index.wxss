@@ -1,0 +1,79 @@
+@import "../../practice/sequence/index.wxss";
+
+.exam-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.timer {
+  min-width: 126rpx;
+  min-height: 58rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #003fa3;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.progress {
+  height: 10rpx;
+  margin-top: 24rpx;
+  border-radius: 999rpx;
+  overflow: hidden;
+  background: #dce3f1;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: #003fa3;
+}
+
+.number-scroll {
+  margin: 24rpx -32rpx 24rpx;
+  white-space: nowrap;
+}
+
+.number-row {
+  display: flex;
+  gap: 12rpx;
+  padding: 0 32rpx;
+}
+
+.num {
+  width: 62rpx;
+  height: 62rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #687082;
+  background: #ffffff;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.num.done {
+  color: #003fa3;
+  background: #dae1ff;
+}
+
+.num.active {
+  color: #ffffff;
+  background: #003fa3;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
+  margin-top: 28rpx;
+}
+
+.submit {
+  margin-top: 18rpx;
+}

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>模拟考试 - 答题页</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary": "#ffffff",
+                        "surface": "#faf8ff",
+                        "secondary-fixed": "#e0e3e6",
+                        "on-surface-variant": "#434653",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#c4c7ca",
+                        "secondary-container": "#e0e3e6",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#773200",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f3037",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "primary-container": "#2b58bd",
+                        "on-secondary-container": "#626567",
+                        "on-primary-fixed": "#001849",
+                        "surface-tint": "#2b58bd",
+                        "outline-variant": "#c3c6d5",
+                        "surface-container-highest": "#e2e2eb",
+                        "background": "#faf8ff",
+                        "on-tertiary-fixed": "#331200",
+                        "on-secondary-fixed": "#191c1e",
+                        "on-background": "#1a1b22",
+                        "inverse-primary": "#b3c5ff",
+                        "surface-container": "#ededf6",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e2e2eb",
+                        "surface-container-high": "#e8e7f0",
+                        "tertiary-container": "#9c4400",
+                        "inverse-on-surface": "#f0f0f9",
+                        "tertiary-fixed-dim": "#ffb68f",
+                        "on-tertiary-fixed-variant": "#773200",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#faf8ff",
+                        "on-error": "#ffffff",
+                        "primary": "#003fa3",
+                        "primary-fixed": "#dae1ff",
+                        "surface-container-low": "#f3f3fc",
+                        "on-primary-container": "#ccd7ff",
+                        "on-secondary-fixed-variant": "#44474a",
+                        "on-surface": "#1a1b22",
+                        "on-tertiary-container": "#ffceb5",
+                        "secondary": "#5b5f61",
+                        "outline": "#747684",
+                        "tertiary-fixed": "#ffdbca",
+                        "surface-dim": "#d9d9e2"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "stack-gap": "12px",
+                        "section-padding": "20px",
+                        "item-padding": "16px",
+                        "container-margin": "16px"
+                    },
+                    fontFamily: {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+                        "title-lg": ["18px", { "lineHeight": "26px", "fontWeight": "600" }],
+                        "display-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Hide scrollbar for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md antialiased h-screen flex flex-col overflow-hidden">
+<!-- Top Navigation / Exam Header (Task-Focused, suppresses global nav) -->
+<header class="flex-none bg-surface-container-lowest shadow-sm z-50">
+<div class="h-14 px-4 flex items-center justify-between">
+<!-- Left: Exit -->
+<button class="w-10 h-10 flex items-center justify-start text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+<!-- Center: Countdown Timer -->
+<div class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">timer</span>
+<span class="font-display-lg text-[22px] tracking-tight tabular-nums">59:59</span>
+</div>
+<!-- Right: Submit Action -->
+<button class="font-label-sm text-label-sm bg-primary-container text-on-primary-container px-3.5 py-1.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors">
+                交卷
+            </button>
+</div>
+<!-- Top Progress Indicator -->
+<div class="w-full h-[3px] bg-surface-variant">
+<div class="h-full bg-primary w-[24%] rounded-r-full transition-all duration-300"></div>
+</div>
+</header>
+<!-- Main Content Area (Scrollable, supports horizontal swipe visually via layout) -->
+<main class="flex-1 overflow-y-auto w-full relative">
+<div class="min-h-full px-container-margin py-section-padding pb-[140px] flex flex-col">
+<!-- Question Meta -->
+<div class="flex items-center justify-between mb-4">
+<div class="bg-surface-container-high text-on-surface-variant px-2.5 py-1 rounded-DEFAULT font-label-sm text-label-sm shadow-sm">
+                    单选题
+                </div>
+<div class="text-outline font-body-md text-body-md tracking-wide">
+<span class="text-primary font-bold">12</span> / 50
+                </div>
+</div>
+<!-- Question Stem -->
+<h1 class="font-headline-md text-headline-md text-on-surface mb-8 leading-snug">
+                长护师在协助卧床老年人进食时，为了防止发生呛咳和误吸，应首先协助老年人采取何种体位最为适宜？
+            </h1>
+<!-- Options List -->
+<div class="flex flex-col gap-stack-gap w-full">
+<!-- Option A (Unselected) -->
+<button class="w-full group text-left p-item-padding rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low transition-colors flex items-start gap-3 shadow-[0px_2px_8px_rgba(43,88,189,0.02)]">
+<span class="w-7 h-7 flex-none rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-body-md font-medium group-hover:bg-surface-variant transition-colors">
+                        A
+                    </span>
+<span class="font-body-lg text-body-lg text-on-surface pt-0.5">
+                        平卧位，头部略向后仰以利吞咽
+                    </span>
+</button>
+<!-- Option B (Selected State) -->
+<button class="w-full text-left p-item-padding rounded-xl border-2 border-primary bg-primary-fixed bg-opacity-30 flex items-start gap-3 shadow-[0px_2px_12px_rgba(43,88,189,0.08)]">
+<span class="w-7 h-7 flex-none rounded-full bg-primary text-on-primary flex items-center justify-center font-body-md font-medium">
+                        B
+                    </span>
+<span class="font-body-lg text-body-lg text-on-primary-fixed-variant pt-0.5 font-medium">
+                        半坐卧位，头部稍向前倾，下颌微收
+                    </span>
+</button>
+<!-- Option C (Unselected) -->
+<button class="w-full group text-left p-item-padding rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low transition-colors flex items-start gap-3 shadow-[0px_2px_8px_rgba(43,88,189,0.02)]">
+<span class="w-7 h-7 flex-none rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-body-md font-medium group-hover:bg-surface-variant transition-colors">
+                        C
+                    </span>
+<span class="font-body-lg text-body-lg text-on-surface pt-0.5">
+                        侧卧位，面部朝向照护人员
+                    </span>
+</button>
+<!-- Option D (Unselected) -->
+<button class="w-full group text-left p-item-padding rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low transition-colors flex items-start gap-3 shadow-[0px_2px_8px_rgba(43,88,189,0.02)]">
+<span class="w-7 h-7 flex-none rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-body-md font-medium group-hover:bg-surface-variant transition-colors">
+                        D
+                    </span>
+<span class="font-body-lg text-body-lg text-on-surface pt-0.5">
+                        端坐位，头部尽量向后靠紧床头
+                    </span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Controls & Answer Sheet Preview -->
+<footer class="fixed bottom-0 w-full bg-surface-container-lowest border-t border-outline-variant rounded-t-xl z-50 shadow-[0px_-4px_16px_rgba(0,0,0,0.04)] flex flex-col">
+<!-- Answer Sheet Dots Preview -->
+<div class="px-4 py-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-surface-variant">
+<div class="text-outline font-label-sm text-label-sm mr-2 shrink-0">进度</div>
+<!-- Dot mapping: Answered (Primary), Current (Ringed), Unanswered (Variant) -->
+<div class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-surface-variant shrink-0 ring-2 ring-primary ring-offset-2 ring-offset-surface-container-lowest"></div> <!-- Current -->
+<div class="w-2.5 h-2.5 rounded-full bg-surface-variant shrink-0"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-surface-variant shrink-0"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-surface-variant shrink-0"></div>
+<div class="w-px h-4 bg-outline-variant mx-1 shrink-0"></div>
+<!-- Trigger for full Answer Sheet -->
+<button class="ml-auto text-on-surface-variant hover:text-primary font-label-sm text-label-sm flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+                答题卡
+            </button>
+</div>
+<!-- Navigation Actions -->
+<div class="flex items-center justify-between px-4 py-3 pb-safe">
+<button class="px-6 py-2.5 rounded-full border border-outline-variant text-on-surface font-body-md text-body-md hover:bg-surface-container-low transition-colors">
+                上一题
+            </button>
+<button class="px-8 py-2.5 rounded-full bg-primary text-on-primary font-body-md text-body-md shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-colors">
+                下一题
+            </button>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,50 @@
+<view class="page my-page">
+  <app-nav title="我的"></app-nav>
+  <view class="profile-card">
+    <image wx:if="{{avatarUrl}}" class="avatar image-avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
+    <view wx:else class="avatar">{{avatarText}}</view>
+    <view class="profile-copy">
+      <view class="name">{{user.nickname || '微信用户'}}</view>
+      <view class="status">{{hasPaid ? '已解锁完整题库' : '未购买完整题库'}}</view>
+    </view>
+    <view class="edit-profile" bindtap="toggleProfileEdit">
+      <image class="edit-icon" src="/assets/icons/edit.svg" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <view wx:if="{{editingProfile}}" class="panel">
+    <view class="panel-title">个人资料</view>
+    <view class="profile-form-row">
+      <text>头像</text>
+      <button class="avatar-picker" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+        <image wx:if="{{avatarUrl}}" class="picker-avatar-img" src="{{avatarUrl}}" mode="aspectFill"></image>
+        <text wx:else>选择</text>
+      </button>
+    </view>
+    <view class="profile-form-row">
+      <text>昵称</text>
+      <input class="nickname-input" type="nickname" value="{{nicknameInput}}" placeholder="请输入昵称" bindinput="onNicknameInput" />
+    </view>
+    <view class="save-profile" bindtap="saveProfile">保存资料</view>
+  </view>
+
+  <view class="panel">
+    <view class="panel-title">学习服务</view>
+    <view class="row">
+      <text>题库权限</text>
+      <text class="{{paidClass}}">{{hasPaid ? '已解锁' : '未购买'}}</text>
+    </view>
+  </view>
+
+  <view class="panel">
+    <view class="panel-title">操作</view>
+    <view class="row tappable" bindtap="goHome">
+      <text>返回首页</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="row tappable" bindtap="clearCache">
+      <text>清除本地缓存</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+</view>

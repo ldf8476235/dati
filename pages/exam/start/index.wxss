@@ -1,0 +1,50 @@
+.intro {
+  margin-top: 10rpx;
+  line-height: 38rpx;
+}
+
+.rules {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12rpx;
+  margin-top: 32rpx;
+  padding: 28rpx;
+}
+
+.rule {
+  text-align: center;
+}
+
+.rule-num {
+  display: block;
+  color: #003fa3;
+  font-size: 44rpx;
+  font-weight: 900;
+}
+
+.rule-label {
+  display: block;
+  margin-top: 6rpx;
+  color: #687082;
+  font-size: 24rpx;
+}
+
+.picker-control {
+  min-height: 88rpx;
+  box-sizing: border-box;
+  margin-top: 28rpx;
+  padding: 0 28rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  font-weight: 800;
+}
+
+.start-button {
+  margin-top: 34rpx;
+}
+
+.history-button {
+  margin-top: 18rpx;
+}

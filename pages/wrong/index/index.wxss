@@ -1,0 +1,81 @@
+@import "../../practice/sequence/index.wxss";
+
+.header {
+  margin-bottom: 20rpx;
+}
+
+.filters {
+  margin-bottom: 24rpx;
+}
+
+.picker-control {
+  min-height: 84rpx;
+  box-sizing: border-box;
+  padding: 0 26rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  font-weight: 800;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding: 8rpx;
+  border-radius: 999rpx;
+  background: #e8ecf5;
+}
+
+.segment {
+  min-height: 68rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5b6374;
+  font-weight: 800;
+}
+
+.segment.active {
+  color: #ffffff;
+  background: #003fa3;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.list-item {
+  padding: 26rpx;
+  text-align: left;
+}
+
+.item-title {
+  color: #1a1b22;
+  font-size: 28rpx;
+  line-height: 42rpx;
+  font-weight: 700;
+}
+
+.item-meta {
+  margin-top: 14rpx;
+  color: #687082;
+  font-size: 24rpx;
+}
+
+.back-link {
+  margin-bottom: 18rpx;
+  color: #003fa3;
+  font-size: 26rpx;
+  font-weight: 800;
+  text-align: left;
+}
+
+.submit {
+  margin-top: 26rpx;
+}

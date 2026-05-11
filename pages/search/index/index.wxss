@@ -1,0 +1,33 @@
+@import "../../wrong/index/index.wxss";
+
+.search-bar {
+  display: grid;
+  grid-template-columns: 1fr 150rpx;
+  gap: 14rpx;
+  margin-top: 22rpx;
+  margin-bottom: 18rpx;
+}
+
+.search-input {
+  min-height: 84rpx;
+  box-sizing: border-box;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
+  background: #ffffff;
+  font-size: 28rpx;
+}
+
+.search-button {
+  min-height: 84rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #003fa3;
+  font-weight: 800;
+}
+
+.count {
+  margin-bottom: 14rpx;
+}

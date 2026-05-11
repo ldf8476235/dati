@@ -1,0 +1,38 @@
+<view class="page exam-detail">
+  <app-nav title="考试答题" back-home="{{true}}"></app-nav>
+  <view class="exam-top">
+    <view>
+      <view class="section-title">{{exam.levelName}}</view>
+      <view class="muted">已答 {{answeredCount}} / {{questions.length}}</view>
+    </view>
+    <view class="timer">{{remainingText}}</view>
+  </view>
+
+  <view class="progress">
+    <view class="progress-fill" style="width: {{progressPercent}}%;"></view>
+  </view>
+
+  <scroll-view class="number-scroll" scroll-x>
+    <view class="number-row">
+      <button wx:for="{{questions}}" wx:key="id" data-index="{{index}}" bindtap="goQuestion" class="num {{current === index ? 'active' : ''}} {{item.answered ? 'done' : ''}}">{{index + 1}}</button>
+    </view>
+  </scroll-view>
+
+  <view wx:if="{{questions.length}}" class="card question-card">
+    <view class="question-meta">
+      <text class="tag">{{questions[current].typeLabel}}</text>
+      <text class="muted">第 {{current + 1}} 题</text>
+    </view>
+    <view class="question-content">{{questions[current].content}}</view>
+  </view>
+
+  <view wx:if="{{questions.length}}" class="options">
+    <button wx:for="{{questions[current].optionItems}}" wx:key="value" class="option {{currentAnswer === item.value ? 'selected' : ''}}" data-value="{{item.value}}" bindtap="selectAnswer">{{item.label}}</button>
+  </view>
+
+  <view class="actions">
+    <button class="ghost-button" bindtap="prevQuestion">上一题</button>
+    <button class="ghost-button" bindtap="nextQuestion">下一题</button>
+  </view>
+  <button class="primary-button submit" loading="{{submitting}}" bindtap="confirmSubmit">交卷</button>
+</view>

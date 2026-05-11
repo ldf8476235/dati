@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "考试答题",
+  "usingComponents": {
+    "app-nav": "/components/app-nav/app-nav"
+  }
+}

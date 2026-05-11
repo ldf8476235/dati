@@ -1,0 +1,53 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/practice/sequence/index",
+    "pages/practice/random/index",
+    "pages/wrong/index/index",
+    "pages/search/index/index",
+    "pages/exam/start/index",
+    "pages/exam/detail/index",
+    "pages/exam/result/index",
+    "pages/exam/history/index",
+    "pages/my/index/index",
+    "pages/logs/logs"
+  ],
+  "window": {
+    "backgroundColor": "#f5f7fb",
+    "navigationBarBackgroundColor": "#f5f7fb",
+    "navigationBarTitleText": "我爱刷题",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "color": "#667085",
+    "selectedColor": "#0b4db7",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/my/index/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "renderer": "skyline",
+  "rendererOptions": {
+    "skyline": {
+      "defaultDisplayBlock": true,
+      "defaultContentBox": true,
+      "tagNameStyleIsolation": "legacy",
+      "disableABTest": true,
+      "sdkVersionBegin": "3.0.0",
+      "sdkVersionEnd": "15.255.255"
+    }
+  },
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,20 @@
+<view class="page">
+  <app-nav title="考试历史" back-home="{{true}}"></app-nav>
+  <view class="section-title">考试历史</view>
+  <picker value="{{levelIndex}}" range="{{levelNames}}" bindchange="onLevelChange">
+    <view class="picker-control">{{levelNames[levelIndex] || '选择等级'}}</view>
+  </picker>
+
+  <view wx:if="{{loading}}" class="empty">正在加载考试历史...</view>
+  <view wx:elif="{{!items.length}}" class="empty">暂无考试记录</view>
+  <view wx:else class="history-list">
+    <view wx:for="{{items}}" wx:key="examId" class="card history-item">
+      <view class="history-head">
+        <text class="score">{{item.score}} / {{item.totalScore}}</text>
+        <text class="tag">{{item.statusText}}</text>
+      </view>
+      <view class="muted">用时 {{item.usedText}}</view>
+      <view class="muted">开始：{{item.startedAt}}</view>
+    </view>
+  </view>
+</view>

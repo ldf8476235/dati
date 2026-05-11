@@ -1,0 +1,36 @@
+.picker-control {
+  min-height: 88rpx;
+  box-sizing: border-box;
+  margin-top: 24rpx;
+  padding: 0 28rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  font-weight: 800;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  margin-top: 24rpx;
+}
+
+.history-item {
+  padding: 28rpx;
+  line-height: 40rpx;
+}
+
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.score {
+  color: #003fa3;
+  font-size: 40rpx;
+  font-weight: 900;
+}

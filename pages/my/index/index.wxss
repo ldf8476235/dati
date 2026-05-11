@@ -1,0 +1,166 @@
+.my-page {
+  padding-top: calc(120rpx + env(safe-area-inset-top));
+  padding-left: 22rpx;
+  padding-right: 22rpx;
+  background: #f4f6fb;
+}
+
+.profile-card {
+  min-height: 148rpx;
+  box-sizing: border-box;
+  padding: 26rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(16, 24, 40, 0.07);
+}
+
+.avatar {
+  width: 82rpx;
+  height: 82rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #0b4db7;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.image-avatar {
+  display: block;
+  overflow: hidden;
+}
+
+.profile-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.edit-profile {
+  width: 74rpx;
+  height: 74rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-icon {
+  width: 58rpx;
+  height: 58rpx;
+  display: block;
+}
+
+.name {
+  color: #202631;
+  font-size: 34rpx;
+  line-height: 44rpx;
+  font-weight: 900;
+}
+
+.status {
+  margin-top: 8rpx;
+  color: #667085;
+  font-size: 24rpx;
+  line-height: 34rpx;
+}
+
+.panel {
+  margin-top: 22rpx;
+  padding: 8rpx 24rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(16, 24, 40, 0.06);
+}
+
+.panel-title {
+  padding: 22rpx 0 12rpx;
+  color: #202631;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.row {
+  min-height: 86rpx;
+  border-top: 1rpx solid #edf0f5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #344054;
+  font-size: 27rpx;
+}
+
+.profile-form-row {
+  min-height: 92rpx;
+  border-top: 1rpx solid #edf0f5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #344054;
+  font-size: 27rpx;
+}
+
+.avatar-picker {
+  width: 74rpx;
+  height: 74rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0b4db7;
+  background: #dfe8fb;
+  font-size: 22rpx;
+  font-weight: 900;
+  overflow: hidden;
+}
+
+.picker-avatar-img {
+  width: 74rpx;
+  height: 74rpx;
+  display: block;
+}
+
+.nickname-input {
+  width: 420rpx;
+  min-height: 72rpx;
+  text-align: right;
+  color: #202631;
+  font-size: 27rpx;
+}
+
+.save-profile {
+  min-height: 82rpx;
+  margin: 14rpx 0 18rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #0b4db7;
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.tappable {
+  color: #202631;
+}
+
+.ok {
+  color: #116043;
+  font-weight: 800;
+}
+
+.warn {
+  color: #b35a18;
+  font-weight: 800;
+}
+
+.arrow {
+  color: #98a2b3;
+  font-size: 42rpx;
+  font-weight: 300;
+}
