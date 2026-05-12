@@ -99,19 +99,22 @@ public class ExamService {
         int score = 0;
         for (QuestionMapper.Question q : questions) {
             String rawAnswer = answerMap.get(q.id());
-            String userAnswer = rawAnswer == null || rawAnswer.isBlank() ? "" : questionService.normalizeAnswer(q.type(), rawAnswer);
-            boolean correct = q.answer().equalsIgnoreCase(userAnswer);
-            if (correct) {
+            boolean answered = rawAnswer != null && !rawAnswer.isBlank();
+            String userAnswer = answered ? questionService.normalizeAnswer(q.type(), rawAnswer) : null;
+            Boolean correct = answered ? q.answer().equalsIgnoreCase(userAnswer) : null;
+            if (Boolean.TRUE.equals(correct)) {
                 score++;
             }
             jdbc.update("update exam_session_questions set user_answer = ?, is_correct = ? where exam_session_id = ? and question_id = ?",
-                    userAnswer, correct ? 1 : 0, examId, q.id());
-            upsertRecord(userId, q.id(), userAnswer, correct);
+                    userAnswer, correct == null ? null : (correct ? 1 : 0), examId, q.id());
+            if (answered) {
+                upsertRecord(userId, q.id(), userAnswer, Boolean.TRUE.equals(correct));
+            }
         }
         jdbc.update("update exam_sessions set status = ?, score = ?, submitted_at = ?, used_seconds = ? where id = ?",
                 status, score, submittedAt, Math.min(usedSeconds, DURATION_SECONDS), examId);
         List<Map<String, Object>> details = jdbc.queryForList("""
-                select q.id questionId, esq.is_correct correct, q.answer correctAnswer, q.analysis analysis
+                select q.id questionId, esq.user_answer userAnswer, esq.is_correct correct, q.answer correctAnswer, q.analysis analysis
                 from exam_session_questions esq join questions q on q.id = esq.question_id
                 where esq.exam_session_id = ?
                 order by esq.question_order asc
@@ -130,10 +133,27 @@ public class ExamService {
     public Map<String, Object> history(long userId, long levelId, int page, int pageSize) {
         int offset = (Math.max(page, 1) - 1) * pageSize;
         List<Map<String, Object>> items = jdbc.queryForList("""
-                select id examId, status, score, total_score totalScore, used_seconds usedSeconds, started_at startedAt, submitted_at submittedAt
-                from exam_sessions
-                where user_id = ? and level_id = ?
-                order by started_at desc
+                select s.id examId,
+                       s.status,
+                       s.score,
+                       s.total_score totalScore,
+                       s.used_seconds usedSeconds,
+                       s.started_at startedAt,
+                       s.submitted_at submittedAt,
+                       coalesce(stats.correctCount, 0) correctCount,
+                       coalesce(stats.wrongCount, 0) wrongCount,
+                       coalesce(stats.unansweredCount, 0) unansweredCount
+                from exam_sessions s
+                left join (
+                    select exam_session_id,
+                           sum(case when is_correct = 1 then 1 else 0 end) correctCount,
+                           sum(case when is_correct = 0 then 1 else 0 end) wrongCount,
+                           sum(case when is_correct is null then 1 else 0 end) unansweredCount
+                    from exam_session_questions
+                    group by exam_session_id
+                ) stats on stats.exam_session_id = s.id
+                where s.user_id = ? and s.level_id = ?
+                order by s.started_at desc
                 limit ? offset ?
                 """, userId, levelId, pageSize, offset);
         Integer total = jdbc.queryForObject("select count(*) from exam_sessions where user_id = ? and level_id = ?",

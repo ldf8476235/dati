@@ -51,10 +51,22 @@ public class QuestionController {
         return questionService.wrongQuestions(AuthContext.userId(), levelId, type, page, pageSize);
     }
 
+    @PostMapping("/wrong-questions/{questionId}/remove")
+    public Map<String, Object> removeWrong(@PathVariable long questionId) {
+        questionService.removeWrongQuestion(AuthContext.userId(), questionId);
+        return Map.of("success", true);
+    }
+
+    @PostMapping("/wrong-questions/clear")
+    public Map<String, Object> clearWrong() {
+        questionService.clearWrongQuestions(AuthContext.userId());
+        return Map.of("success", true);
+    }
+
     @GetMapping("/questions/search")
     public Map<String, Object> search(@RequestParam long levelId,
                                       @RequestParam String type,
-                                      @RequestParam String keyword,
+                                      @RequestParam(defaultValue = "") String keyword,
                                       @RequestParam(defaultValue = "1") int page,
                                       @RequestParam(defaultValue = "20") int pageSize) {
         return questionService.search(AuthContext.userId(), levelId, type, keyword, page, pageSize);

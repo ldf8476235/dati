@@ -1,51 +1,44 @@
-<import src="../../practice/question-pane.wxml" />
+<view class="page search-page">
+  <app-nav title="搜索" back-home="{{true}}"></app-nav>
 
-<view class="practice-shell search-shell">
-  <app-nav title="试题搜索" back-home="{{true}}"></app-nav>
-
-  <view wx:if="{{!active}}" class="list-head">
-    <view class="module-title">试题搜索</view>
-    <view class="module-desc">按题干关键词定位当前等级题目</view>
-  </view>
-
-  <view wx:if="{{!active}}" class="search-bar">
-    <input class="search-input" value="{{keyword}}" placeholder="输入题干关键词" bindinput="onKeywordInput" confirm-type="search" bindconfirm="search" />
-    <button class="search-button" bindtap="search">搜索</button>
-  </view>
-
-  <view wx:if="{{!active}}" class="filters">
-    <picker value="{{levelIndex}}" range="{{levelNames}}" bindchange="onLevelChange">
-      <view class="picker-control">
-        <text>{{levelNames[levelIndex] || '选择等级'}}</text>
-        <view class="picker-arrow"></view>
+  <view class="search-header">
+    <view class="search-row">
+      <view class="search-bar">
+        <view class="search-icon"></view>
+        <input class="search-input" value="{{keyword}}" placeholder="请输入" bindinput="onKeywordInput" confirm-type="search" bindconfirm="search" />
+        <view wx:if="{{keyword}}" class="clear-icon" bindtap="clearKeyword"></view>
       </view>
-    </picker>
-    <view class="segmented">
-      <view wx:for="{{types}}" wx:key="value" bindtap="onTypeTap" data-type="{{item.value}}" class="segment {{type === item.value ? 'active' : ''}}">{{item.label}}</view>
+      <view class="search-action" bindtap="search">搜索</view>
+    </view>
+
+    <view class="type-tabs">
+      <view wx:for="{{types}}" wx:key="value" bindtap="onTypeTap" data-type="{{item.value}}" class="type-tab {{type === item.value ? 'active' : ''}}">{{item.label}}</view>
     </view>
   </view>
 
-  <view wx:if="{{searching}}" class="empty">正在搜索...</view>
+  <scroll-view class="result-scroll" scroll-y enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view wx:if="{{loading}}" class="empty">正在加载题目...</view>
+    <view wx:elif="{{!items.length}}" class="empty">{{keyword ? '未找到匹配题目' : '当前等级暂无题目'}}</view>
 
-  <view wx:elif="{{active}}" class="detail-mode">
-    <view class="detail-top">
-      <view class="back-link" bindtap="closeQuestion">返回结果</view>
-      <view class="detail-meta">搜索结果</view>
+    <view wx:else class="result-list">
+      <view wx:for="{{items}}" wx:key="id" class="question-item">
+        <view class="question-title">
+          <text class="type-badge">{{item.type === 'single_choice' ? '单选' : '判断'}}</text>
+          <text>{{item.content}}（　）。（{{item.typeHint}}）</text>
+        </view>
+        <view class="option-lines">
+          <view wx:for="{{item.optionItems}}" wx:for-item="option" wx:key="value" class="option-line">{{option.value}}.{{option.displayLabel}}</view>
+        </view>
+        <view class="answer-panel">
+          <view class="answer-top">
+            <view class="answer-line">
+              <text>答案</text>
+              <text class="answer-value">{{item.answerText}}</text>
+            </view>
+            <view class="copy-button" data-index="{{index}}" catchtap="copyQuestion">复制</view>
+          </view>
+        </view>
+      </view>
     </view>
-    <template is="question-pane" data="{{pane:activePane}}" />
-    <view class="detail-actions">
-      <view wx:if="{{!result}}" class="submit-action {{selected ? '' : 'disabled'}}" bindtap="submitAnswer">提交答案</view>
-      <view wx:else class="submit-action ghost" bindtap="closeQuestion">返回结果</view>
-    </view>
-  </view>
-
-  <view wx:elif="{{!items.length}}" class="empty">{{keyword ? '未找到匹配题目' : '输入关键词后开始搜索'}}</view>
-
-  <view wx:else class="list">
-    <view class="count">找到 {{total}} 道题</view>
-    <view wx:for="{{items}}" wx:key="id" class="list-item" data-index="{{index}}" bindtap="openQuestion">
-      <view class="item-title">{{item.content}}</view>
-      <view class="item-meta">{{item.typeLabel}}</view>
-    </view>
-  </view>
+  </scroll-view>
 </view>

@@ -4,30 +4,20 @@ Page({
   data: {
     loading: true,
     starting: false,
-    levels: [],
-    levelNames: [],
-    levelIndex: 0
+    currentLevelName: '初级'
   },
 
   onLoad() {
     const app = getApp()
-    request({ url: `/api/home?levelId=${app.globalData.currentLevelId}` }).then((home) => {
+    request({ url: '/api/home' }).then((home) => {
       const levels = home.levels || []
-      const levelIndex = Math.max(0, levels.findIndex((item) => item.id === app.globalData.currentLevelId))
+      const currentLevelId = Number(app.globalData.currentLevelId) || 1
+      const level = levels.find((item) => item.id === currentLevelId) || levels[0]
       this.setData({
         loading: false,
-        levels,
-        levelNames: levels.map((item) => item.name),
-        levelIndex
+        currentLevelName: level ? level.name : '初级'
       })
     }).catch(() => this.setData({ loading: false }))
-  },
-
-  onLevelChange(e) {
-    const levelIndex = Number(e.detail.value)
-    const level = this.data.levels[levelIndex]
-    if (level) getApp().setStudyPrefs(level.id, getApp().globalData.currentQuestionType)
-    this.setData({ levelIndex })
   },
 
   goHome() {
@@ -35,15 +25,14 @@ Page({
   },
 
   startExam() {
-    const level = this.data.levels[this.data.levelIndex]
-    if (!level || this.data.starting) return
+    const levelId = Number(getApp().globalData.currentLevelId) || 1
     this.setData({ starting: true })
     request({
       url: '/api/exams',
       method: 'POST',
-      data: { levelId: level.id }
+      data: { levelId }
     }).then((exam) => {
-      wx.setStorageSync('activeExam', Object.assign({}, exam, { levelName: level.name, answers: {} }))
+      wx.setStorageSync('activeExam', Object.assign({}, exam, { levelName: this.data.currentLevelName, answers: {} }))
       wx.navigateTo({ url: '/pages/exam/detail/index' })
       this.setData({ starting: false })
     }).catch(() => this.setData({ starting: false }))

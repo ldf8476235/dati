@@ -134,6 +134,7 @@ public class QuestionService {
         int offset = (Math.max(page, 1) - 1) * pageSize;
         List<Map<String, Object>> items = jdbc.queryForList("""
                 select q.id, q.type, q.content, q.option_a optionA, q.option_b optionB, q.option_c optionC, q.option_d optionD,
+                       q.answer correctAnswer, q.analysis analysis,
                        r.wrong_count wrongCount, r.last_answered_at lastAnsweredAt
                 from user_question_records r
                 join questions q on q.id = r.question_id
@@ -148,25 +149,43 @@ public class QuestionService {
         return Map.of("items", items, "page", page, "pageSize", pageSize, "total", total == null ? 0 : total);
     }
 
+    @Transactional
+    public void removeWrongQuestion(long userId, long questionId) {
+        jdbc.update("""
+                update user_question_records
+                set wrong_count = 0
+                where user_id = ? and question_id = ?
+                """, userId, questionId);
+    }
+
+    @Transactional
+    public void clearWrongQuestions(long userId) {
+        jdbc.update("""
+                update user_question_records
+                set wrong_count = 0
+                where user_id = ? and wrong_count > 0
+                """, userId);
+    }
+
     public Map<String, Object> search(long userId, long levelId, String type, String keyword, int page, int pageSize) {
         userService.requirePaid(userId);
         validateType(type);
-        if (keyword == null || keyword.isBlank()) {
-            throw ApiException.badRequest("keyword 必填");
-        }
         int offset = (Math.max(page, 1) - 1) * pageSize;
-        String like = "%" + keyword.trim() + "%";
+        String value = keyword == null ? "" : keyword.trim();
+        String like = "%" + value + "%";
         List<QuestionMapper.PublicQuestion> items = jdbc.query("""
                 select * from questions
-                where level_id = ? and type = ? and enabled = 1 and (content like ? or analysis like ?)
+                where level_id = ? and type = ? and enabled = 1
+                  and (? = '' or content like ? or analysis like ?)
                 order by sort_no asc, id asc
                 limit ? offset ?
-                """, QUESTION_ROW_MAPPER, levelId, type, like, like, pageSize, offset)
+                """, QUESTION_ROW_MAPPER, levelId, type, value, like, like, pageSize, offset)
                 .stream().map(QuestionMapper::publicQuestion).toList();
         Integer total = jdbc.queryForObject("""
                 select count(*) from questions
-                where level_id = ? and type = ? and enabled = 1 and (content like ? or analysis like ?)
-                """, Integer.class, levelId, type, like, like);
+                where level_id = ? and type = ? and enabled = 1
+                  and (? = '' or content like ? or analysis like ?)
+                """, Integer.class, levelId, type, value, like, like);
         return Map.of("items", items, "page", page, "pageSize", pageSize, "total", total == null ? 0 : total);
     }
 

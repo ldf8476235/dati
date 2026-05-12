@@ -43,7 +43,15 @@ function formatDuration(seconds) {
   return `${min}:${sec < 10 ? '0' : ''}${sec}`
 }
 
+function scoreToneClass(score) {
+  const value = Number(score) || 0
+  if (value >= 80) return 'score-good'
+  if (value >= 60) return 'score-warn'
+  return 'score-bad'
+}
+
 module.exports = {
   normalizeQuestion,
-  formatDuration
+  formatDuration,
+  scoreToneClass
 }

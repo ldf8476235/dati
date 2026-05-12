@@ -1,4 +1,5 @@
 const { login } = require('../../../utils/auth')
+const request = require('../../../utils/request')
 
 Page({
   data: {
@@ -58,6 +59,36 @@ Page({
 
   goHome() {
     wx.switchTab({ url: '/pages/index/index' })
+  },
+
+  clearWrongQuestions() {
+    wx.showModal({
+      title: '清理错题',
+      content: '将清空当前账号的全部错题记录，清理后错题本会变为空。',
+      confirmText: '清理',
+      confirmColor: '#ba1a1a',
+      success: (res) => {
+        if (!res.confirm) return
+        wx.showLoading({ title: '清理中' })
+        request({
+          url: '/api/wrong-questions/clear',
+          method: 'POST'
+        }).then(() => {
+          this.clearWrongPracticeStorage()
+          wx.hideLoading()
+          wx.showToast({ title: '已清理', icon: 'success' })
+        }).catch(() => wx.hideLoading())
+      }
+    })
+  },
+
+  clearWrongPracticeStorage() {
+    const info = wx.getStorageInfoSync()
+    ;(info.keys || []).forEach((key) => {
+      if (key.indexOf('wrongPracticeProgress:') === 0) {
+        wx.removeStorageSync(key)
+      }
+    })
   },
 
   clearCache() {

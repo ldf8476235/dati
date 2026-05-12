@@ -24,15 +24,16 @@ Page({
     }
     const questions = (exam.questions || []).map(normalizeQuestion)
     const answers = exam.answers || {}
+    const markedQuestions = this.markAnswered(questions, answers)
     this.setData({
       exam,
-      questions: this.markAnswered(questions, answers),
+      questions: markedQuestions,
       answers,
-      answeredCount: Object.keys(answers).length,
+      answeredCount: this.countAnswered(answers),
       progressPercent: questions.length ? 100 / questions.length : 0,
       remaining: exam.durationSeconds || 3600,
       remainingText: formatDuration(exam.durationSeconds || 3600),
-      currentAnswer: answers[questions[0] && questions[0].id] || ''
+      currentAnswer: markedQuestions[0] ? markedQuestions[0].selected : ''
     }, () => this.syncCurrentPane())
     this.startTimer()
   },
@@ -60,14 +61,17 @@ Page({
     const question = this.data.questions[this.data.current]
     const answer = e.currentTarget.dataset.value
     const answers = Object.assign({}, this.data.answers, { [question.id]: answer })
+    const questions = this.data.questions.map((item, index) => (
+      index === this.data.current ? Object.assign({}, item, { selected: answer, answered: true }) : item
+    ))
     const exam = Object.assign({}, this.data.exam, { answers })
     wx.setStorageSync('activeExam', exam)
     this.setData({
       answers,
       exam,
       currentAnswer: answer,
-      answeredCount: Object.keys(answers).length,
-      questions: this.markAnswered(this.data.questions, answers)
+      answeredCount: this.countAnswered(answers),
+      questions
     }, () => this.syncCurrentPane())
   },
 
@@ -76,7 +80,7 @@ Page({
     const question = this.data.questions[current]
     this.setData({
       current,
-      currentAnswer: this.data.answers[question.id] || '',
+      currentAnswer: question ? (question.selected || this.data.answers[question.id] || '') : '',
       progressPercent: this.data.questions.length ? (current + 1) * 100 / this.data.questions.length : 0
     }, () => this.syncCurrentPane())
   },
@@ -96,7 +100,7 @@ Page({
     const question = this.data.questions[current]
     this.setData({
       current,
-      currentAnswer: this.data.answers[question.id] || '',
+      currentAnswer: question ? (question.selected || this.data.answers[question.id] || '') : '',
       progressPercent: this.data.questions.length ? (current + 1) * 100 / this.data.questions.length : 0
     }, () => this.syncCurrentPane())
   },
@@ -114,10 +118,7 @@ Page({
   submitExam() {
     if (this.data.submitting) return
     this.setData({ submitting: true })
-    const answers = Object.keys(this.data.answers).map((id) => ({
-      questionId: Number(id),
-      answer: this.data.answers[id]
-    }))
+    const answers = this.collectAnswers()
     request({
       url: `/api/exams/${this.data.exam.examId}/submit`,
       method: 'POST',
@@ -135,8 +136,20 @@ Page({
 
   markAnswered(questions, answers) {
     return (questions || []).map((question) => Object.assign({}, question, {
-      answered: Boolean(answers[question.id])
+      selected: answers[question.id] || '',
+      answered: hasAnswer(answers[question.id])
     }))
+  },
+
+  countAnswered(answers) {
+    return Object.keys(answers || {}).filter((id) => hasAnswer(answers[id])).length
+  },
+
+  collectAnswers() {
+    return (this.data.questions || []).map((question) => {
+      const answer = hasAnswer(question.selected) ? question.selected : this.data.answers[question.id]
+      return hasAnswer(answer) ? { questionId: Number(question.id), answer } : null
+    }).filter(Boolean)
   },
 
   syncCurrentPane() {
@@ -152,3 +165,9 @@ Page({
     })
   }
 })
+
+function hasAnswer(value) {
+  if (value === null || value === undefined) return false
+  if (typeof value === 'string') return value.trim() !== ''
+  return true
+}

@@ -42,6 +42,10 @@
       <text>返回首页</text>
       <text class="arrow">›</text>
     </view>
+    <view class="row tappable" bindtap="clearWrongQuestions">
+      <text>一键清理错题</text>
+      <text class="arrow">›</text>
+    </view>
     <view class="row tappable" bindtap="clearCache">
       <text>清除本地缓存</text>
       <text class="arrow">›</text>

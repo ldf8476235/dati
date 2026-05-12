@@ -6,35 +6,26 @@ const TYPES = [
   { label: '判断题', value: 'true_false' }
 ]
 
+const PAGE_SIZE = 10000
+
 Page({
   data: {
     keyword: '',
-    searching: false,
-    levels: [],
-    levelNames: [],
-    levelIndex: 0,
+    loading: true,
     types: TYPES,
     type: 'single_choice',
     items: [],
-    total: 0,
-    active: null,
-    selected: '',
-    result: null,
-    activePane: null
+    total: 0
   },
 
   onLoad() {
-    request({ url: '/api/home' }).then((home) => {
-      const app = getApp()
-      const levels = home.levels || []
-      const levelIndex = Math.max(0, levels.findIndex((item) => item.id === app.globalData.currentLevelId))
-      this.setData({
-        levels,
-        levelNames: levels.map((item) => item.name),
-        levelIndex,
-        type: app.globalData.currentQuestionType
-      })
+    const app = getApp()
+    app.restoreState()
+    this.currentLevelId = app.globalData.currentLevelId || Number(wx.getStorageSync('currentLevelId')) || 1
+    this.setData({
+      type: app.globalData.currentQuestionType || wx.getStorageSync('currentQuestionType') || 'single_choice'
     })
+    this.loadQuestions()
   },
 
   goHome() {
@@ -43,87 +34,82 @@ Page({
 
   onKeywordInput(e) {
     this.setData({ keyword: e.detail.value })
-  },
-
-  onLevelChange(e) {
-    this.setData({ levelIndex: Number(e.detail.value), active: null, selected: '', result: null, activePane: null })
-    this.persistPrefs()
-    if (this.data.keyword.trim()) {
-      this.search()
-    } else {
-      this.setData({ items: [], total: 0 })
-    }
+    clearTimeout(this.searchTimer)
+    this.searchTimer = setTimeout(() => this.loadQuestions(), 350)
   },
 
   onTypeTap(e) {
-    this.setData({ type: e.currentTarget.dataset.type, active: null, selected: '', result: null, activePane: null })
-    this.persistPrefs()
-    if (this.data.keyword.trim()) {
-      this.search()
-    } else {
-      this.setData({ items: [], total: 0 })
-    }
-  },
-
-  persistPrefs() {
-    const level = this.data.levels[this.data.levelIndex]
-    if (level) getApp().setStudyPrefs(level.id, this.data.type)
+    const type = e.currentTarget.dataset.type
+    if (type === this.data.type) return
+    this.setData({ type, items: [], total: 0 })
+    getApp().setStudyPrefs(this.currentLevelId, type)
+    this.loadQuestions()
   },
 
   search() {
+    this.loadQuestions()
+  },
+
+  clearKeyword() {
+    clearTimeout(this.searchTimer)
+    this.setData({ keyword: '' })
+    this.loadQuestions()
+  },
+
+  loadQuestions() {
     const keyword = this.data.keyword.trim()
-    const level = this.data.levels[this.data.levelIndex]
-    if (!keyword) {
-      wx.showToast({ title: '请输入关键词', icon: 'none' })
-      return
-    }
-    this.setData({ searching: true, active: null, activePane: null })
+    this.setData({ loading: true })
     request({
-      url: `/api/questions/search?levelId=${level.id}&type=${this.data.type}&keyword=${encodeURIComponent(keyword)}&page=1&pageSize=50`
+      url: `/api/questions/search?levelId=${this.currentLevelId}&type=${this.data.type}&keyword=${encodeURIComponent(keyword)}&page=1&pageSize=${PAGE_SIZE}`
     }).then((data) => {
+      const items = (data.items || []).map((item, index) => this.decorateQuestion(item, index))
       this.setData({
-        searching: false,
-        total: data.total || 0,
-        items: (data.items || []).map(normalizeQuestion)
+        loading: false,
+        total: data.total || items.length,
+        items
       })
-    }).catch(() => this.setData({ searching: false }))
+    }).catch(() => this.setData({ loading: false }))
   },
 
-  openQuestion(e) {
-    this.setData({ active: this.data.items[e.currentTarget.dataset.index], selected: '', result: null }, () => this.syncActivePane())
-  },
-
-  closeQuestion() {
-    this.setData({ active: null, selected: '', result: null, activePane: null })
-  },
-
-  selectAnswer(e) {
-    if (this.data.result) return
-    this.setData({ selected: e.currentTarget.dataset.value }, () => this.syncActivePane())
-  },
-
-  submitAnswer() {
-    if (!this.data.selected) {
-      wx.showToast({ title: '请选择答案', icon: 'none' })
-      return
-    }
-    request({
-      url: `/api/questions/${this.data.active.id}/answer`,
-      method: 'POST',
-      data: { answer: this.data.selected, mode: 'search' }
-    }).then((result) => this.setData({ result }, () => this.syncActivePane()))
-  },
-
-  syncActivePane() {
-    const active = this.data.active
-    this.setData({
-      activePane: active ? {
-        key: `${active.id}`,
-        question: active,
-        selected: this.data.selected,
-        result: this.data.result,
-        wrongText: ''
-      } : null
+  decorateQuestion(item, index) {
+    const question = normalizeQuestion(item, index)
+    return Object.assign({}, question, {
+      answerText: this.formatAnswer(question),
+      analysisText: question.analysis || '',
+      copyText: this.buildCopyText(question)
     })
+  },
+
+  formatAnswer(question) {
+    const answer = question.correctAnswer
+    if (answer === 'true') return '正确'
+    if (answer === 'false') return '错误'
+    const option = (question.optionItems || []).find((item) => item.value === answer)
+    return option ? `${answer}. ${option.displayLabel}` : (answer || '-')
+  },
+
+  buildCopyText(question) {
+    const lines = [
+      `${question.content}（${question.typeHint}）`
+    ]
+    ;(question.optionItems || []).forEach((option) => {
+      lines.push(`${option.value}. ${option.displayLabel}`)
+    })
+    lines.push(`答案：${this.formatAnswer(question)}`)
+    return lines.join('\n')
+  },
+
+  copyQuestion(e) {
+    const index = Number(e.currentTarget.dataset.index)
+    const item = this.data.items[index]
+    if (!item) return
+    wx.setClipboardData({
+      data: item.copyText,
+      success: () => wx.showToast({ title: '已复制', icon: 'success' })
+    })
+  },
+
+  onUnload() {
+    clearTimeout(this.searchTimer)
   }
 })

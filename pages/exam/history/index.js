@@ -1,5 +1,5 @@
 const request = require('../../../utils/request')
-const { formatDuration } = require('../../../utils/questions')
+const { formatDuration, scoreToneClass } = require('../../../utils/questions')
 
 Page({
   data: {
@@ -42,6 +42,11 @@ Page({
         total: data.total || 0,
         items: (data.items || []).map((item) => Object.assign({}, item, {
           usedText: formatDuration(item.usedSeconds || 0),
+          answeredCount: Number(item.correctCount || 0) + Number(item.wrongCount || 0),
+          correctCount: Number(item.correctCount || 0),
+          wrongCount: Number(item.wrongCount || 0),
+          unansweredCount: Number(item.unansweredCount || 0),
+          scoreClass: scoreToneClass(item.score),
           statusText: item.status === 'doing' ? '未交卷' : item.status === 'timeout' ? '超时提交' : '已提交'
         }))
       })

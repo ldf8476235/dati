@@ -1,3 +1,17 @@
+.result-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.result-scroll {
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  padding-bottom: calc(116rpx + env(safe-area-inset-bottom));
+}
+
 .score-card {
   padding: 36rpx;
   text-align: center;
@@ -5,20 +19,33 @@
 
 .score {
   margin: 12rpx 0;
-  color: #003fa3;
   font-size: 96rpx;
   line-height: 112rpx;
   font-weight: 900;
 }
 
+.score-good {
+  color: #2e7d32;
+}
+
+.score-warn {
+  color: #d97706;
+}
+
+.score-bad {
+  color: #ba1a1a;
+}
+
 .summary {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
   gap: 18rpx;
   margin-top: 22rpx;
 }
 
 .summary-item {
+  flex: 1;
+  min-width: 0;
+  min-height: 116rpx;
   padding: 24rpx;
   border-radius: 16rpx;
   background: #ffffff;
@@ -57,7 +84,7 @@
   display: flex;
   flex-direction: column;
   gap: 18rpx;
-  padding-bottom: 130rpx;
+  padding-bottom: 0;
 }
 
 .detail-item {
@@ -94,8 +121,13 @@
   position: fixed;
   left: 32rpx;
   right: 32rpx;
-  bottom: calc(24rpx + env(safe-area-inset-bottom));
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  bottom: calc(22rpx + env(safe-area-inset-bottom));
+  display: flex;
   gap: 18rpx;
+  z-index: 20;
+}
+
+.bottom-actions button {
+  flex: 1;
+  min-width: 0;
 }

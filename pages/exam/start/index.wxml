@@ -5,7 +5,6 @@
   <block wx:else>
     <view class="exam-brief">
       <view class="brief-title">模拟考试</view>
-      <view class="brief-desc">按当前等级随机组卷，答题期间自动保存进度。</view>
     </view>
 
     <view class="exam-metrics">
@@ -24,13 +23,10 @@
     </view>
 
     <view class="exam-control">
-      <view class="control-label">考试等级</view>
-      <picker value="{{levelIndex}}" range="{{levelNames}}" bindchange="onLevelChange">
-        <view class="level-control">
-          <text>{{levelNames[levelIndex] || '选择等级'}}</text>
-          <view class="level-control-arrow"></view>
-        </view>
-      </picker>
+      <view class="control-label">当前等级</view>
+      <view class="level-control">
+        <text>{{currentLevelName}}</text>
+      </view>
     </view>
 
     <view class="exam-actions">

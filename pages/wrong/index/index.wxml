@@ -1,47 +1,75 @@
 <import src="../../practice/question-pane.wxml" />
 
-<view class="practice-shell list-shell">
+<view class="practice-shell wrong-practice {{darkMode ? 'practice-dark' : ''}}" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
   <app-nav title="我的错题" back-home="{{true}}"></app-nav>
 
-  <view wx:if="{{!active}}" class="list-head">
-    <view>
-      <view class="module-title">我的错题</view>
-      <view class="module-desc">共 {{total}} 道需要回看</view>
-    </view>
-  </view>
-
-  <view wx:if="{{!active}}" class="filters">
-    <picker value="{{levelIndex}}" range="{{levelNames}}" bindchange="onLevelChange">
-      <view class="picker-control">
-        <text>{{levelNames[levelIndex] || '选择等级'}}</text>
-        <view class="picker-arrow"></view>
-      </view>
-    </picker>
-    <view class="segmented">
-      <view wx:for="{{types}}" wx:key="value" bindtap="onTypeTap" data-type="{{item.value}}" class="segment {{type === item.value ? 'active' : ''}}">{{item.label}}</view>
-    </view>
-  </view>
-
   <view wx:if="{{loading}}" class="empty">正在加载错题...</view>
+  <view wx:elif="{{!questions.length}}" class="empty">当前等级暂无错题</view>
 
-  <view wx:elif="{{active}}" class="detail-mode">
-    <view class="detail-top">
-      <view class="back-link" bindtap="closeQuestion">返回列表</view>
-      <view class="detail-meta">错 {{active.wrongCount}} 次</view>
+  <block wx:else>
+    <view class="question-slider font-{{fontSize}}">
+      <view class="question-track {{slideTrackClass}}">
+        <block wx:for="{{slidePanes}}" wx:key="key">
+          <template is="question-pane" data="{{pane:item}}" />
+        </block>
+      </view>
     </view>
-    <template is="question-pane" data="{{pane:activePane}}" />
-    <view class="detail-actions">
-      <view wx:if="{{!result}}" class="submit-action {{selected ? '' : 'disabled'}}" bindtap="submitAnswer">提交答案</view>
-      <view wx:else class="submit-action ghost" bindtap="closeQuestion">返回列表</view>
-    </view>
-  </view>
 
-  <view wx:elif="{{!items.length}}" class="empty">当前筛选下暂无错题</view>
+    <view wx:if="{{showSheet || showSettings}}" class="panel-mask" bindtap="closePanels"></view>
 
-  <view wx:else class="list">
-    <view wx:for="{{items}}" wx:key="id" class="list-item" data-index="{{index}}" bindtap="openQuestion">
-      <view class="item-title">{{item.content}}</view>
-      <view class="item-meta">错 {{item.wrongCount}} 次 · {{item.typeLabel}}</view>
+    <view wx:if="{{showSheet}}" class="question-sheet">
+      <scroll-view scroll-y class="question-grid" enhanced="{{true}}" show-scrollbar="{{false}}">
+        <view class="question-grid-content">
+          <view wx:for="{{questions}}" wx:key="id" class="question-num {{current === index ? 'active' : ''}} {{answers[item.id] ? answers[item.id].status : ''}}" data-index="{{index}}" bindtap="onQuestionTap">{{index + 1}}</view>
+        </view>
+      </scroll-view>
+      <view class="sheet-actions">
+        <view class="sheet-button" bindtap="resetAnswers">重新答题</view>
+        <view class="sheet-button" bindtap="toggleSheet">收起</view>
+      </view>
     </view>
-  </view>
+
+    <view wx:if="{{showSettings}}" class="settings-panel">
+      <view class="setting-row">
+        <text>答对跳转下一题</text>
+        <switch checked="{{autoNext}}" color="#0b5bd3" bindchange="toggleAutoNext"></switch>
+      </view>
+      <view class="setting-row">
+        <text>开启背题模式</text>
+        <switch checked="{{darkMode}}" color="#0b5bd3" bindchange="toggleDarkMode"></switch>
+      </view>
+      <view class="setting-row">
+        <text>选项乱序</text>
+        <switch checked="{{optionOrder}}" color="#0b5bd3" bindchange="toggleOptionOrder"></switch>
+      </view>
+      <view class="setting-row font-row">
+        <text>字体大小</text>
+        <view class="font-options">
+          <text class="{{fontSize === 'small' ? 'active' : ''}}" data-size="small" bindtap="chooseFontSize">小号</text>
+          <text class="{{fontSize === 'normal' ? 'active' : ''}}" data-size="normal" bindtap="chooseFontSize">标准</text>
+          <text class="{{fontSize === 'large' ? 'active' : ''}}" data-size="large" bindtap="chooseFontSize">大号</text>
+          <text class="{{fontSize === 'xlarge' ? 'active' : ''}}" data-size="xlarge" bindtap="chooseFontSize">特大</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="practice-tabbar">
+      <view class="tool-item" bindtap="toggleSettings">
+        <view class="tool-icon settings-icon"></view>
+        <view>设置</view>
+      </view>
+      <view class="score-item right-score">
+        <view class="score-dot blue"></view>
+        <view>{{rightCount}}</view>
+      </view>
+      <view class="score-item wrong-score">
+        <view class="score-dot red"></view>
+        <view>{{wrongCount}}</view>
+      </view>
+      <view class="tool-item question-entry" bindtap="toggleSheet">
+        <view class="grid-icon"></view>
+        <view>{{current + 1}}/{{questions.length}}</view>
+      </view>
+    </view>
+  </block>
 </view>

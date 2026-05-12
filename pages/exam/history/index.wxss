@@ -1,3 +1,21 @@
+.history-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.history-scroll {
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+}
+
+.history-scroll .section-title {
+  margin-top: 0;
+}
+
 .picker-control {
   min-height: 88rpx;
   box-sizing: border-box;
@@ -15,6 +33,7 @@
   flex-direction: column;
   gap: 18rpx;
   margin-top: 24rpx;
+  padding-bottom: 32rpx;
 }
 
 .history-item {
@@ -29,8 +48,42 @@
   margin-bottom: 10rpx;
 }
 
-.score {
-  color: #003fa3;
+.history-score-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+  margin: 2rpx 0 8rpx;
+}
+
+.history-score {
   font-size: 40rpx;
   font-weight: 900;
+}
+
+.score-good {
+  color: #2e7d32;
+}
+
+.score-warn {
+  color: #d97706;
+}
+
+.score-bad {
+  color: #ba1a1a;
+}
+
+.history-score-label {
+  color: #687082;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.history-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx 20rpx;
+  margin: 6rpx 0 10rpx;
+  color: #465064;
+  font-size: 24rpx;
+  line-height: 34rpx;
 }
