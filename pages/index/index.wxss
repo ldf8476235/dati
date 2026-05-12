@@ -83,19 +83,37 @@
   padding: 0 14rpx;
   border: 2rpx solid #d9e3fb;
   border-radius: 12rpx;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8rpx;
   color: #202631;
   background: #ffffff;
   font-size: 24rpx;
   font-weight: 900;
+  line-height: 32rpx;
 }
 
 .level-arrow {
-  color: #0b4db7;
-  font-size: 22rpx;
-  font-weight: 900;
+  width: 14rpx;
+  height: 14rpx;
+  box-sizing: border-box;
+  border-right: 4rpx solid #0b4db7;
+  border-bottom: 4rpx solid #0b4db7;
+  border-radius: 1rpx;
+  transform: translateY(-3rpx) rotate(45deg);
+  flex: none;
+}
+
+.empty-level {
+  margin-top: 20rpx;
+  padding: 16rpx 18rpx;
+  border-radius: 12rpx;
+  color: #9a3412;
+  background: #fff7ed;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  font-weight: 800;
 }
 
 .info-panel {

@@ -9,7 +9,7 @@
         <picker value="{{levelIndex}}" range="{{levelNames}}" bindchange="onLevelChange">
           <view class="level-chip">
             <text>{{levelNames[levelIndex] || '选择等级'}}</text>
-            <text class="level-arrow">⌄</text>
+            <view class="level-arrow"></view>
           </view>
         </picker>
       </view>
@@ -26,6 +26,8 @@
           </view>
         </view>
       </view>
+
+      <view wx:if="{{!hasQuestionBank}}" class="empty-level">当前等级暂无题库</view>
 
       <view class="info-panel">
         <view class="info-row">

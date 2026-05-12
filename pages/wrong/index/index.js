@@ -18,7 +18,8 @@ Page({
     total: 0,
     active: null,
     selected: '',
-    result: null
+    result: null,
+    activePane: null
   },
 
   onLoad() {
@@ -48,7 +49,7 @@ Page({
   loadItems() {
     const level = this.data.levels[this.data.levelIndex]
     if (!level) return
-    this.setData({ loading: true, active: null, result: null, selected: '' })
+    this.setData({ loading: true, active: null, result: null, selected: '', activePane: null })
     request({
       url: `/api/wrong-questions?levelId=${level.id}&type=${this.data.type}&page=1&pageSize=50`
     }).then((data) => {
@@ -79,16 +80,16 @@ Page({
 
   openQuestion(e) {
     const active = this.data.items[e.currentTarget.dataset.index]
-    this.setData({ active, selected: '', result: null })
+    this.setData({ active, selected: '', result: null }, () => this.syncActivePane())
   },
 
   closeQuestion() {
-    this.setData({ active: null, selected: '', result: null })
+    this.setData({ active: null, selected: '', result: null, activePane: null })
   },
 
   selectAnswer(e) {
     if (this.data.result) return
-    this.setData({ selected: e.currentTarget.dataset.value })
+    this.setData({ selected: e.currentTarget.dataset.value }, () => this.syncActivePane())
   },
 
   submitAnswer() {
@@ -100,6 +101,19 @@ Page({
       url: `/api/questions/${this.data.active.id}/answer`,
       method: 'POST',
       data: { answer: this.data.selected, mode: 'wrong' }
-    }).then((result) => this.setData({ result }))
+    }).then((result) => this.setData({ result }, () => this.syncActivePane()))
+  },
+
+  syncActivePane() {
+    const active = this.data.active
+    this.setData({
+      activePane: active ? {
+        key: `${active.id}`,
+        question: active,
+        selected: this.data.selected,
+        result: this.data.result,
+        wrongText: active.wrongCount ? `累计错题次数：${active.wrongCount}` : ''
+      } : null
+    })
   }
 })

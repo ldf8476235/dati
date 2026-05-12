@@ -29,7 +29,8 @@ Page({
     optionOrder: false,
     fontSize: 'normal',
     fontSizeLabel: FONT_SIZES.normal,
-    slideClass: ''
+    slidePanes: [],
+    slideTrackClass: ''
   },
 
   onLoad() {
@@ -65,7 +66,7 @@ Page({
     const app = getApp()
     const { currentLevelId } = app.globalData
     this.currentLevelId = currentLevelId
-    this.setData({ loading: true, result: null, selected: '', answers: {}, rightCount: 0, wrongCount: 0 })
+    this.setData({ loading: true, result: null, selected: '', answers: {}, rightCount: 0, wrongCount: 0, slidePanes: [], slideTrackClass: '' })
     Promise.all(QUESTION_TYPES.map((type) => request({
       url: `/api/questions/sequence?levelId=${currentLevelId}&type=${type}&page=1&pageSize=${ALL_PAGE_SIZE}`
     }))).then((responses) => {
@@ -83,7 +84,7 @@ Page({
         answers: progress.answers,
         rightCount: progress.rightCount,
         wrongCount: progress.wrongCount
-      })
+      }, () => this.syncSlidePanes())
     }).catch(() => this.setData({ loading: false }))
   },
 
@@ -121,6 +122,40 @@ Page({
       analysis: record.analysis || question.analysis || '',
       wrongCount: record.wrongCount || 0
     }
+  },
+
+  buildPane(index, overrides = {}) {
+    const question = this.data.questions[index]
+    if (!question) return null
+    const record = this.data.answers[question.id]
+    const selected = overrides.selected !== undefined
+      ? overrides.selected
+      : (index === this.data.current ? this.data.selected : (record ? record.answer : ''))
+    const result = overrides.result !== undefined
+      ? overrides.result
+      : (index === this.data.current
+        ? this.data.result
+        : (this.data.darkMode ? {
+          correct: true,
+          correctAnswer: question.correctAnswer || '',
+          analysis: question.analysis || '',
+          wrongCount: 0
+        } : (record ? this.resultFromRecord(question, record) : null)))
+    return {
+      key: `${question.id}-${index}`,
+      question,
+      selected,
+      result,
+      wrongText: ''
+    }
+  },
+
+  syncSlidePanes() {
+    const pane = this.buildPane(this.data.current)
+    this.setData({
+      slidePanes: pane ? [pane] : [],
+      slideTrackClass: ''
+    })
   },
 
   decorateQuestion(item, index, optionOrder = this.data.optionOrder) {
@@ -171,7 +206,7 @@ Page({
         else wrongCount += 1
       }
 
-      this.setData({ result, answers, rightCount, wrongCount })
+      this.setData({ result, answers, rightCount, wrongCount }, () => this.syncSlidePanes())
       this.saveProgress({ answers })
 
       if (result.correct && this.data.autoNext) {
@@ -194,18 +229,22 @@ Page({
   },
 
   slideToQuestion(index, direction) {
-    const outClass = direction === 'next' ? 'slide-out-left' : 'slide-out-right'
-    const inClass = direction === 'next' ? 'slide-in-right' : 'slide-in-left'
+    if (this.data.slideTrackClass) return
+    const currentPane = this.buildPane(this.data.current)
+    const targetPane = this.buildPane(index)
+    if (!currentPane || !targetPane) return
+    const panes = direction === 'next' ? [currentPane, targetPane] : [targetPane, currentPane]
+    const readyClass = direction === 'next' ? 'slide-ready-next' : 'slide-ready-prev'
+    const moveClass = direction === 'next' ? 'slide-moving slide-move-next' : 'slide-moving slide-move-prev'
     clearTimeout(this.slideTimer)
     clearTimeout(this.slideResetTimer)
-    this.setData({ slideClass: outClass })
+    this.setData({ slidePanes: panes, slideTrackClass: readyClass })
     this.slideTimer = setTimeout(() => {
-      this.goQuestion(index)
-      this.setData({ slideClass: inClass })
+      this.setData({ slideTrackClass: moveClass })
       this.slideResetTimer = setTimeout(() => {
-        this.setData({ slideClass: '' })
-      }, 170)
-    }, 130)
+        this.goQuestion(index)
+      }, 260)
+    }, 20)
   },
 
   onTouchStart(e) {
@@ -242,7 +281,7 @@ Page({
       selected: record ? record.answer : '',
       result,
       showSheet: false
-    })
+    }, () => this.syncSlidePanes())
     this.saveProgress({ current: index })
   },
 
@@ -272,7 +311,7 @@ Page({
       selected: '',
       result: null,
       showSheet: false
-    })
+    }, () => this.syncSlidePanes())
     this.saveProgress({ current: 0, answers: {} })
   },
 
@@ -293,14 +332,14 @@ Page({
         analysis: question.analysis || '',
         wrongCount: 0
       } : null
-    })
+    }, () => this.syncSlidePanes())
     this.saveSettings(Object.assign({}, this.data, { darkMode }))
   },
 
   toggleOptionOrder(e) {
     const optionOrder = e.detail.value
     const questions = this.data.questions.map((question, index) => this.decorateQuestion(Object.assign({}, question), index, optionOrder))
-    this.setData({ optionOrder, questions })
+    this.setData({ optionOrder, questions }, () => this.syncSlidePanes())
     this.saveSettings(Object.assign({}, this.data, { optionOrder }))
   },
 

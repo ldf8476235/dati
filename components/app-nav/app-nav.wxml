@@ -1,6 +1,6 @@
 <view class="app-nav" style="{{navStyle}}">
-  <view wx:if="{{backHome}}" class="app-nav-left" style="{{leftStyle}}" bindtap="goHome">
-    <text class="app-nav-back">‹</text>
+  <view wx:if="{{backHome}}" class="app-nav-left" style="{{leftStyle}}" bindtap="goHome" aria-role="button" aria-label="返回首页">
+    <view class="app-nav-back"></view>
   </view>
   <view class="app-nav-title" style="{{titleStyle}}">{{title}}</view>
 </view>

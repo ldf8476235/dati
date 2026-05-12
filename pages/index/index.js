@@ -19,6 +19,7 @@ Page({
     levelNames: [],
     levelIndex: 0,
     currentType: 'single_choice',
+    hasQuestionBank: true,
     entries: ENTRIES
   },
 
@@ -35,14 +36,18 @@ Page({
   loadHome(showLoading = true) {
     if (showLoading) this.setData({ loading: true })
     const app = getApp()
+    const requestedLevelId = Number(wx.getStorageSync('currentLevelId')) || app.globalData.currentLevelId || DEFAULT_LEVEL_ID
     app.ensureLogin()
-      .then(() => request({ url: '/api/home' }))
+      .then(() => request({ url: `/api/home?levelId=${requestedLevelId}` }))
       .then((home) => {
         const levels = home.levels || []
-        const storedLevelId = Number(wx.getStorageSync('currentLevelId')) || DEFAULT_LEVEL_ID
-        const levelIndex = Math.max(0, levels.findIndex((item) => item.id === storedLevelId))
+        const preferredLevelId = levels.some((item) => item.id === requestedLevelId)
+          ? requestedLevelId
+          : (Number(home.currentLevelId) || DEFAULT_LEVEL_ID)
+        const levelIndex = Math.max(0, levels.findIndex((item) => item.id === preferredLevelId))
         const currentLevelId = levels[levelIndex] ? levels[levelIndex].id : DEFAULT_LEVEL_ID
         const currentType = wx.getStorageSync('currentQuestionType') || 'single_choice'
+        const totalQuestions = Number(home.stats && home.stats.totalQuestions) || 0
         app.setStudyPrefs(currentLevelId, currentType)
         app.syncUser(Object.assign({}, app.globalData.user || wx.getStorageSync('user') || {}, { hasPaid: home.hasPaid }))
         this.setData({
@@ -54,7 +59,8 @@ Page({
           levels,
           levelNames: levels.map((item) => item.name),
           levelIndex,
-          currentType
+          currentType,
+          hasQuestionBank: totalQuestions > 0
         })
       })
       .catch(() => this.setData({ loading: false }))
@@ -66,7 +72,8 @@ Page({
     if (!level) return
     getApp().setStudyPrefs(level.id, this.data.currentType)
     this.setData({
-      levelIndex
+      levelIndex,
+      hasQuestionBank: true
     })
     this.loadHome(false)
   },
@@ -74,6 +81,10 @@ Page({
   goEntry(e) {
     const item = this.data.entries.find((entry) => entry.key === e.currentTarget.dataset.key)
     if (!item) return
+    if (!this.data.hasQuestionBank && ['sequence', 'random', 'exam', 'search'].includes(item.key)) {
+      wx.showToast({ title: '当前等级暂无题库', icon: 'none' })
+      return
+    }
     requirePaid(() => this.loadHome(false)).then((paid) => {
       if (paid) wx.navigateTo({ url: item.url })
     })

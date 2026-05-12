@@ -19,7 +19,8 @@ Page({
     total: 0,
     active: null,
     selected: '',
-    result: null
+    result: null,
+    activePane: null
   },
 
   onLoad() {
@@ -45,13 +46,23 @@ Page({
   },
 
   onLevelChange(e) {
-    this.setData({ levelIndex: Number(e.detail.value) })
+    this.setData({ levelIndex: Number(e.detail.value), active: null, selected: '', result: null, activePane: null })
     this.persistPrefs()
+    if (this.data.keyword.trim()) {
+      this.search()
+    } else {
+      this.setData({ items: [], total: 0 })
+    }
   },
 
   onTypeTap(e) {
-    this.setData({ type: e.currentTarget.dataset.type })
+    this.setData({ type: e.currentTarget.dataset.type, active: null, selected: '', result: null, activePane: null })
     this.persistPrefs()
+    if (this.data.keyword.trim()) {
+      this.search()
+    } else {
+      this.setData({ items: [], total: 0 })
+    }
   },
 
   persistPrefs() {
@@ -66,7 +77,7 @@ Page({
       wx.showToast({ title: '请输入关键词', icon: 'none' })
       return
     }
-    this.setData({ searching: true, active: null })
+    this.setData({ searching: true, active: null, activePane: null })
     request({
       url: `/api/questions/search?levelId=${level.id}&type=${this.data.type}&keyword=${encodeURIComponent(keyword)}&page=1&pageSize=50`
     }).then((data) => {
@@ -79,16 +90,16 @@ Page({
   },
 
   openQuestion(e) {
-    this.setData({ active: this.data.items[e.currentTarget.dataset.index], selected: '', result: null })
+    this.setData({ active: this.data.items[e.currentTarget.dataset.index], selected: '', result: null }, () => this.syncActivePane())
   },
 
   closeQuestion() {
-    this.setData({ active: null, selected: '', result: null })
+    this.setData({ active: null, selected: '', result: null, activePane: null })
   },
 
   selectAnswer(e) {
     if (this.data.result) return
-    this.setData({ selected: e.currentTarget.dataset.value })
+    this.setData({ selected: e.currentTarget.dataset.value }, () => this.syncActivePane())
   },
 
   submitAnswer() {
@@ -100,6 +111,19 @@ Page({
       url: `/api/questions/${this.data.active.id}/answer`,
       method: 'POST',
       data: { answer: this.data.selected, mode: 'search' }
-    }).then((result) => this.setData({ result }))
+    }).then((result) => this.setData({ result }, () => this.syncActivePane()))
+  },
+
+  syncActivePane() {
+    const active = this.data.active
+    this.setData({
+      activePane: active ? {
+        key: `${active.id}`,
+        question: active,
+        selected: this.data.selected,
+        result: this.data.result,
+        wrongText: ''
+      } : null
+    })
   }
 })

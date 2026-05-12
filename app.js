@@ -22,10 +22,15 @@ App({
   },
 
   setStudyPrefs(levelId, type) {
-    this.globalData.currentLevelId = Number(levelId) || 1
+    const nextLevelId = Number(levelId) || 1
+    const levelChanged = this.globalData.currentLevelId !== nextLevelId
+    this.globalData.currentLevelId = nextLevelId
     this.globalData.currentQuestionType = type
     wx.setStorageSync('currentLevelId', this.globalData.currentLevelId)
     wx.setStorageSync('currentQuestionType', type)
+    if (levelChanged) {
+      wx.removeStorageSync('activeExam')
+    }
   },
 
   syncUser(user) {

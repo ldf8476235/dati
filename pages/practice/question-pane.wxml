@@ -1,0 +1,22 @@
+<template name="question-pane">
+  <view class="question-pane">
+    <view class="question-title">
+      <text>{{pane.question.content}}（　）。</text>
+      <text class="question-hint">（{{pane.question.typeHint}}）</text>
+    </view>
+
+    <view class="option-list">
+      <view wx:for="{{pane.question.optionItems}}" wx:key="value" class="answer-option {{pane.selected === item.value ? 'selected' : ''}} {{pane.result && pane.result.correctAnswer === item.value ? 'correct' : ''}} {{pane.result && pane.selected === item.value && !pane.result.correct ? 'wrong' : ''}}" data-value="{{item.value}}" bindtap="selectAnswer">
+        <view class="option-letter {{item.value === 'true' ? 'option-letter-true' : ''}} {{item.value === 'false' ? 'option-letter-false' : ''}}">{{item.value === 'true' ? '√' : item.value === 'false' ? '×' : item.value}}</view>
+        <view class="option-text">{{item.displayLabel}}</view>
+      </view>
+    </view>
+
+    <view wx:if="{{pane.result}}" class="explain-panel {{pane.result.correct ? 'ok' : 'bad'}}">
+      <view class="explain-title">{{pane.result.correct ? '回答正确' : '回答错误'}}</view>
+      <view>正确答案：{{pane.result.correctAnswer === 'true' ? '正确' : pane.result.correctAnswer === 'false' ? '错误' : pane.result.correctAnswer}}</view>
+      <view wx:if="{{pane.result.analysis}}" class="analysis">{{pane.result.analysis}}</view>
+      <view wx:if="{{pane.wrongText}}" class="wrong-count">{{pane.wrongText}}</view>
+    </view>
+  </view>
+</template>

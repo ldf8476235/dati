@@ -1,9 +1,28 @@
 @import "../../practice/sequence/index.wxss";
 
-.exam-top {
+.exam-detail-shell {
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
+}
+
+.exam-status {
+  padding: 18rpx 24rpx 0;
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
+}
+
+.exam-level {
+  color: #202631;
+  font-size: 30rpx;
+  line-height: 38rpx;
+  font-weight: 900;
+}
+
+.exam-meta {
+  margin-top: 4rpx;
+  color: #687082;
+  font-size: 23rpx;
+  line-height: 30rpx;
 }
 
 .timer {
@@ -14,39 +33,40 @@
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  background: #003fa3;
+  background: #0b5bd3;
   font-size: 28rpx;
   font-weight: 900;
 }
 
 .progress {
-  height: 10rpx;
-  margin-top: 24rpx;
+  height: 8rpx;
+  margin: 20rpx 24rpx 0;
   border-radius: 999rpx;
   overflow: hidden;
-  background: #dce3f1;
+  background: #edf0f5;
 }
 
 .progress-fill {
   height: 100%;
   border-radius: 999rpx;
-  background: #003fa3;
+  background: #0b5bd3;
 }
 
 .number-scroll {
-  margin: 24rpx -32rpx 24rpx;
+  margin: 22rpx 0 10rpx;
   white-space: nowrap;
 }
 
 .number-row {
   display: flex;
-  gap: 12rpx;
-  padding: 0 32rpx;
+  gap: 14rpx;
+  padding: 0 24rpx;
 }
 
 .num {
-  width: 62rpx;
-  height: 62rpx;
+  width: 58rpx;
+  height: 58rpx;
+  border: 1rpx solid #edf0f5;
   border-radius: 999rpx;
   display: flex;
   align-items: center;
@@ -58,22 +78,59 @@
 }
 
 .num.done {
-  color: #003fa3;
-  background: #dae1ff;
+  color: #0b5bd3;
+  background: #eef4ff;
 }
 
 .num.active {
   color: #ffffff;
-  background: #003fa3;
+  border-color: #0b5bd3;
+  background: #0b5bd3;
 }
 
-.actions {
+.question-single {
+  width: 100%;
+}
+
+.exam-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  min-height: calc(108rpx + env(safe-area-inset-bottom));
+  padding: 12rpx 22rpx calc(12rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18rpx;
-  margin-top: 28rpx;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 16rpx;
+  align-items: center;
+  background: #ffffff;
+  box-shadow: 0 -1rpx 0 rgba(16, 24, 40, 0.08);
 }
 
-.submit {
-  margin-top: 18rpx;
+.nav-action,
+.submit-action {
+  min-height: 72rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27rpx;
+  font-weight: 900;
+}
+
+.nav-action {
+  color: #202631;
+  border: 2rpx solid #edf0f5;
+  background: #ffffff;
+}
+
+.nav-action.disabled {
+  color: #c3cad5;
+}
+
+.submit-action {
+  color: #ffffff;
+  background: #0b5bd3;
 }

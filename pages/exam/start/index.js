@@ -10,8 +10,8 @@ Page({
   },
 
   onLoad() {
-    request({ url: '/api/home' }).then((home) => {
-      const app = getApp()
+    const app = getApp()
+    request({ url: `/api/home?levelId=${app.globalData.currentLevelId}` }).then((home) => {
       const levels = home.levels || []
       const levelIndex = Math.max(0, levels.findIndex((item) => item.id === app.globalData.currentLevelId))
       this.setData({

@@ -20,14 +20,17 @@ public class QuestionService {
         this.userService = userService;
     }
 
-    public Map<String, Object> home(long userId) {
+    public Map<String, Object> home(long userId, Long requestedLevelId) {
         Map<String, Object> user = userService.loadUser(userId);
         List<QuestionMapper.Level> levels = levels();
-        long levelId = levels.isEmpty() ? 0 : levels.get(0).id();
+        long levelId = resolveLevelId(levels, requestedLevelId);
         Integer total = jdbc.queryForObject("select count(*) from questions where enabled = 1 and (? = 0 or level_id = ?)",
                 Integer.class, levelId, levelId);
-        Integer wrong = jdbc.queryForObject("select count(*) from user_question_records where user_id = ? and wrong_count > 0",
-                Integer.class, userId);
+        Integer wrong = jdbc.queryForObject("""
+                select count(*) from user_question_records r
+                join questions q on q.id = r.question_id
+                where r.user_id = ? and r.wrong_count > 0 and (? = 0 or q.level_id = ?)
+                """, Integer.class, userId, levelId, levelId);
         Integer answered = jdbc.query("select answered_count from user_practice_progress where user_id = ? and level_id = ? order by updated_at desc limit 1",
                 rs -> rs.next() ? rs.getInt(1) : 0, userId, levelId);
         return Map.of(
@@ -40,6 +43,20 @@ public class QuestionService {
                         "wrongCount", wrong == null ? 0 : wrong
                 )
         );
+    }
+
+    private long resolveLevelId(List<QuestionMapper.Level> levels, Long requestedLevelId) {
+        if (levels.isEmpty()) {
+            return 0;
+        }
+        if (requestedLevelId != null) {
+            for (QuestionMapper.Level level : levels) {
+                if (level.id() == requestedLevelId) {
+                    return level.id();
+                }
+            }
+        }
+        return levels.get(0).id();
     }
 
     public List<QuestionMapper.Level> levels() {

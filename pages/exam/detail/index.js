@@ -12,7 +12,8 @@ Page({
     progressPercent: 0,
     remaining: 0,
     remainingText: '60:00',
-    submitting: false
+    submitting: false,
+    currentPane: null
   },
 
   onLoad() {
@@ -32,7 +33,7 @@ Page({
       remaining: exam.durationSeconds || 3600,
       remainingText: formatDuration(exam.durationSeconds || 3600),
       currentAnswer: answers[questions[0] && questions[0].id] || ''
-    })
+    }, () => this.syncCurrentPane())
     this.startTimer()
   },
 
@@ -67,7 +68,7 @@ Page({
       currentAnswer: answer,
       answeredCount: Object.keys(answers).length,
       questions: this.markAnswered(this.data.questions, answers)
-    })
+    }, () => this.syncCurrentPane())
   },
 
   goQuestion(e) {
@@ -77,7 +78,7 @@ Page({
       current,
       currentAnswer: this.data.answers[question.id] || '',
       progressPercent: this.data.questions.length ? (current + 1) * 100 / this.data.questions.length : 0
-    })
+    }, () => this.syncCurrentPane())
   },
 
   prevQuestion() {
@@ -97,7 +98,7 @@ Page({
       current,
       currentAnswer: this.data.answers[question.id] || '',
       progressPercent: this.data.questions.length ? (current + 1) * 100 / this.data.questions.length : 0
-    })
+    }, () => this.syncCurrentPane())
   },
 
   confirmSubmit() {
@@ -136,5 +137,18 @@ Page({
     return (questions || []).map((question) => Object.assign({}, question, {
       answered: Boolean(answers[question.id])
     }))
+  },
+
+  syncCurrentPane() {
+    const question = this.data.questions[this.data.current]
+    this.setData({
+      currentPane: question ? {
+        key: `${question.id}-${this.data.current}`,
+        question,
+        selected: this.data.currentAnswer,
+        result: null,
+        wrongText: ''
+      } : null
+    })
   }
 })

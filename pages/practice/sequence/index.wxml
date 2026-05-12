@@ -1,27 +1,17 @@
+<import src="../question-pane.wxml" />
+
 <view class="practice-shell {{darkMode ? 'practice-dark' : ''}}" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
   <app-nav title="顺序练习" back-home="{{true}}"></app-nav>
 
   <view wx:if="{{loading}}" class="empty">正在加载题目...</view>
-  <view wx:elif="{{!questions.length}}" class="empty">当前条件下暂无题目</view>
+  <view wx:elif="{{!questions.length}}" class="empty">当前等级暂无题库</view>
 
   <block wx:else>
-    <view class="question-area font-{{fontSize}} {{slideClass}}">
-      <view class="question-title">
-        <text>{{questions[current].content}}（　）。</text>
-        <text class="question-hint">（{{questions[current].typeHint}}）</text>
-      </view>
-
-      <view class="option-list">
-        <view wx:for="{{questions[current].optionItems}}" wx:key="value" class="answer-option {{selected === item.value ? 'selected' : ''}} {{result && result.correctAnswer === item.value ? 'correct' : ''}} {{result && selected === item.value && !result.correct ? 'wrong' : ''}}" data-value="{{item.value}}" bindtap="selectAnswer">
-          <view class="option-letter">{{item.value === 'true' ? '√' : item.value === 'false' ? '×' : item.value}}</view>
-          <view class="option-text">{{item.displayLabel}}</view>
-        </view>
-      </view>
-
-      <view wx:if="{{result}}" class="explain-panel {{result.correct ? 'ok' : 'bad'}}">
-        <view class="explain-title">{{result.correct ? '回答正确' : '回答错误'}}</view>
-        <view>正确答案：{{result.correctAnswer === 'true' ? '正确' : result.correctAnswer === 'false' ? '错误' : result.correctAnswer}}</view>
-        <view wx:if="{{result.analysis}}" class="analysis">{{result.analysis}}</view>
+    <view class="question-slider font-{{fontSize}}">
+      <view class="question-track {{slideTrackClass}}">
+        <block wx:for="{{slidePanes}}" wx:key="key">
+          <template is="question-pane" data="{{pane:item}}" />
+        </block>
       </view>
     </view>
 
@@ -35,7 +25,7 @@
       </scroll-view>
       <view class="sheet-actions">
         <view class="sheet-button" bindtap="resetAnswers">重新答题</view>
-        <view class="sheet-button" bindtap="toggleSheet">⌄ 收起</view>
+        <view class="sheet-button" bindtap="toggleSheet">收起</view>
       </view>
     </view>
 
@@ -65,7 +55,7 @@
 
     <view class="practice-tabbar">
       <view class="tool-item" bindtap="toggleSettings">
-        <view class="tool-icon">⚙</view>
+        <view class="tool-icon settings-icon"></view>
         <view>设置</view>
       </view>
       <view class="score-item right-score">

@@ -1,27 +1,41 @@
-<view class="page exam-start">
+<view class="practice-shell exam-start-shell">
   <app-nav title="模拟考试" back-home="{{true}}"></app-nav>
-  <view class="section-title">模拟考试</view>
-  <view class="muted intro">100 题，60 分钟，系统按当前等级随机组卷。</view>
 
-  <view class="card rules">
-    <view class="rule">
-      <text class="rule-num">80</text>
-      <text class="rule-label">选择题</text>
+  <view wx:if="{{loading}}" class="empty">正在加载考试配置...</view>
+  <block wx:else>
+    <view class="exam-brief">
+      <view class="brief-title">模拟考试</view>
+      <view class="brief-desc">按当前等级随机组卷，答题期间自动保存进度。</view>
     </view>
-    <view class="rule">
-      <text class="rule-num">20</text>
-      <text class="rule-label">判断题</text>
-    </view>
-    <view class="rule">
-      <text class="rule-num">100</text>
-      <text class="rule-label">总分</text>
-    </view>
-  </view>
 
-  <picker value="{{levelIndex}}" range="{{levelNames}}" bindchange="onLevelChange">
-    <view class="picker-control">{{levelNames[levelIndex] || '选择等级'}}</view>
-  </picker>
+    <view class="exam-metrics">
+      <view class="metric">
+        <view class="metric-value">80</view>
+        <view class="metric-label">选择题</view>
+      </view>
+      <view class="metric">
+        <view class="metric-value">20</view>
+        <view class="metric-label">判断题</view>
+      </view>
+      <view class="metric">
+        <view class="metric-value">60</view>
+        <view class="metric-label">分钟</view>
+      </view>
+    </view>
 
-  <button class="primary-button start-button" loading="{{starting}}" bindtap="startExam">{{starting ? '正在组卷' : '开始考试'}}</button>
-  <button class="ghost-button history-button" bindtap="goHistory">考试历史</button>
+    <view class="exam-control">
+      <view class="control-label">考试等级</view>
+      <picker value="{{levelIndex}}" range="{{levelNames}}" bindchange="onLevelChange">
+        <view class="level-control">
+          <text>{{levelNames[levelIndex] || '选择等级'}}</text>
+          <view class="level-control-arrow"></view>
+        </view>
+      </picker>
+    </view>
+
+    <view class="exam-actions">
+      <button class="primary-button start-button" loading="{{starting}}" bindtap="startExam">{{starting ? '正在组卷' : '开始考试'}}</button>
+      <button class="ghost-button history-button" bindtap="goHistory">考试历史</button>
+    </view>
+  </block>
 </view>
