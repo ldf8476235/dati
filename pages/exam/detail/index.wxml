@@ -1,6 +1,6 @@
 <import src="../../practice/question-pane.wxml" />
 
-<view class="practice-shell exam-detail-shell">
+<view class="practice-shell exam-detail-shell" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
   <app-nav title="考试答题" back-home="{{true}}"></app-nav>
 
   <view class="exam-status">
@@ -15,19 +15,15 @@
     <view class="progress-fill" style="width: {{progressPercent}}%;"></view>
   </view>
 
-  <scroll-view class="number-scroll" scroll-x enhanced="{{true}}" show-scrollbar="{{false}}">
-    <view class="number-row">
-      <button wx:for="{{questions}}" wx:key="id" data-index="{{index}}" bindtap="goQuestion" class="num {{current === index ? 'active' : ''}} {{item.answered ? 'done' : ''}}">{{index + 1}}</button>
+  <view wx:if="{{currentPane}}" class="question-slider">
+    <view class="question-track {{slideTrackClass}}">
+      <block wx:for="{{slidePanes}}" wx:key="key">
+        <template is="question-pane" data="{{pane:item}}" />
+      </block>
     </view>
-  </scroll-view>
-
-  <view wx:if="{{currentPane}}" class="question-single">
-    <template is="question-pane" data="{{pane:currentPane}}" />
   </view>
 
   <view class="exam-tabbar">
-    <view class="nav-action {{current <= 0 ? 'disabled' : ''}}" bindtap="prevQuestion">上一题</view>
     <view class="submit-action" bindtap="confirmSubmit">{{submitting ? '交卷中' : '交卷'}}</view>
-    <view class="nav-action {{current >= questions.length - 1 ? 'disabled' : ''}}" bindtap="nextQuestion">下一题</view>
   </view>
 </view>

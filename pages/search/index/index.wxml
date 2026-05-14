@@ -11,9 +11,6 @@
       <view class="search-action" bindtap="search">搜索</view>
     </view>
 
-    <view class="type-tabs">
-      <view wx:for="{{types}}" wx:key="value" bindtap="onTypeTap" data-type="{{item.value}}" class="type-tab {{type === item.value ? 'active' : ''}}">{{item.label}}</view>
-    </view>
   </view>
 
   <scroll-view class="result-scroll" scroll-y enhanced="{{true}}" show-scrollbar="{{false}}">
@@ -35,7 +32,6 @@
               <text>答案</text>
               <text class="answer-value">{{item.answerText}}</text>
             </view>
-            <view class="copy-button" data-index="{{index}}" catchtap="copyQuestion">复制</view>
           </view>
         </view>
       </view>

@@ -1,8 +1,6 @@
-const request = require('../../../utils/request')
 const { normalizeQuestion } = require('../../../utils/questions')
-
-const QUESTION_TYPES = ['single_choice', 'true_false']
-const ALL_PAGE_SIZE = 10000
+const request = require('../../../utils/request')
+const { getQuestionBank } = require('../../../utils/question-cache')
 
 Page({
   data: {
@@ -31,13 +29,10 @@ Page({
     const { currentLevelId } = app.globalData
     clearTimeout(this.autoNextTimer)
     this.setData({ loading: true, result: null, selected: '', answering: false, slidePanes: [], slideTrackClass: '' })
-    Promise.all(QUESTION_TYPES.map((type) => request({
-      url: `/api/questions/sequence?levelId=${currentLevelId}&type=${type}&page=1&pageSize=${ALL_PAGE_SIZE}`
-    }))).then((responses) => {
-      const items = responses.reduce((list, data) => list.concat(data.items || []), [])
+    getQuestionBank(currentLevelId).then((bank) => {
       this.setData({
         loading: false,
-        questions: shuffle(items).map(decorateQuestion),
+        questions: shuffle(bank.items).map(decorateQuestion),
         current: 0
       }, () => this.syncSlidePanes())
     }).catch(() => this.setData({ loading: false, answering: false }))

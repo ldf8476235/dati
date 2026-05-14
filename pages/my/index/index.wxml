@@ -1,4 +1,4 @@
-<view class="page my-page">
+<view wx:if="{{visible}}" class="page my-page">
   <app-nav title="我的"></app-nav>
   <view class="profile-card">
     <image wx:if="{{avatarUrl}}" class="avatar image-avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
@@ -23,9 +23,9 @@
     </view>
     <view class="profile-form-row">
       <text>昵称</text>
-      <input class="nickname-input" type="nickname" value="{{nicknameInput}}" placeholder="请输入昵称" bindinput="onNicknameInput" />
+      <input class="nickname-input" type="nickname" value="{{nicknameInput}}" focus="{{nicknameFocus}}" placeholder="请输入昵称" bindinput="onNicknameInput" bindconfirm="saveProfile" />
     </view>
-    <view class="save-profile" bindtap="saveProfile">保存资料</view>
+    <button class="save-profile" bindtap="saveProfile">保存资料</button>
   </view>
 
   <view class="panel">
@@ -40,6 +40,10 @@
     <view class="panel-title">操作</view>
     <view class="row tappable" bindtap="goHome">
       <text>返回首页</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="row tappable" bindtap="refreshQuestionCache">
+      <text>刷新题库缓存</text>
       <text class="arrow">›</text>
     </view>
     <view class="row tappable" bindtap="clearWrongQuestions">

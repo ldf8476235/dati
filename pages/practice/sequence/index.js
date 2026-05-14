@@ -1,8 +1,7 @@
-const request = require('../../../utils/request')
 const { normalizeQuestion } = require('../../../utils/questions')
+const request = require('../../../utils/request')
+const { getQuestionBank } = require('../../../utils/question-cache')
 
-const QUESTION_TYPES = ['single_choice', 'true_false']
-const ALL_PAGE_SIZE = 10000
 const FONT_SIZES = {
   small: '小号',
   normal: '标准',
@@ -67,16 +66,12 @@ Page({
     const { currentLevelId } = app.globalData
     this.currentLevelId = currentLevelId
     this.setData({ loading: true, result: null, selected: '', answers: {}, rightCount: 0, wrongCount: 0, slidePanes: [], slideTrackClass: '' })
-    Promise.all(QUESTION_TYPES.map((type) => request({
-      url: `/api/questions/sequence?levelId=${currentLevelId}&type=${type}&page=1&pageSize=${ALL_PAGE_SIZE}`
-    }))).then((responses) => {
-      const items = responses.reduce((list, data) => list.concat(data.items || []), [])
-      const total = responses.reduce((sum, data) => sum + (Number(data.total) || 0), 0)
-      const questions = items.map((item, index) => this.decorateQuestion(item, index))
+    getQuestionBank(currentLevelId).then((bank) => {
+      const questions = bank.items.map((item, index) => this.decorateQuestion(item, index))
       const progress = this.loadProgress(currentLevelId, questions)
       this.setData({
         loading: false,
-        total,
+        total: bank.total || questions.length,
         questions,
         current: progress.current,
         selected: progress.selected,

@@ -13,7 +13,9 @@ Page({
     remaining: 0,
     remainingText: '60:00',
     submitting: false,
-    currentPane: null
+    currentPane: null,
+    slidePanes: [],
+    slideTrackClass: ''
   },
 
   onLoad() {
@@ -25,21 +27,27 @@ Page({
     const questions = (exam.questions || []).map(normalizeQuestion)
     const answers = exam.answers || {}
     const markedQuestions = this.markAnswered(questions, answers)
+    const current = Math.min(Math.max(Number(exam.current) || 0, 0), Math.max(markedQuestions.length - 1, 0))
+    const currentQuestion = markedQuestions[current]
     this.setData({
       exam,
       questions: markedQuestions,
+      current,
       answers,
       answeredCount: this.countAnswered(answers),
-      progressPercent: questions.length ? 100 / questions.length : 0,
+      progressPercent: questions.length ? (current + 1) * 100 / questions.length : 0,
       remaining: exam.durationSeconds || 3600,
       remainingText: formatDuration(exam.durationSeconds || 3600),
-      currentAnswer: markedQuestions[0] ? markedQuestions[0].selected : ''
+      currentAnswer: currentQuestion ? currentQuestion.selected : ''
     }, () => this.syncCurrentPane())
     this.startTimer()
   },
 
   onUnload() {
     if (this.timer) clearInterval(this.timer)
+    clearTimeout(this.slideTimer)
+    clearTimeout(this.slideResetTimer)
+    clearTimeout(this.autoNextTimer)
   },
 
   goHome() {
@@ -59,12 +67,13 @@ Page({
 
   selectAnswer(e) {
     const question = this.data.questions[this.data.current]
+    if (!question) return
     const answer = e.currentTarget.dataset.value
     const answers = Object.assign({}, this.data.answers, { [question.id]: answer })
     const questions = this.data.questions.map((item, index) => (
       index === this.data.current ? Object.assign({}, item, { selected: answer, answered: true }) : item
     ))
-    const exam = Object.assign({}, this.data.exam, { answers })
+    const exam = Object.assign({}, this.data.exam, { answers, current: this.data.current })
     wx.setStorageSync('activeExam', exam)
     this.setData({
       answers,
@@ -72,14 +81,28 @@ Page({
       currentAnswer: answer,
       answeredCount: this.countAnswered(answers),
       questions
-    }, () => this.syncCurrentPane())
+    }, () => {
+      this.syncCurrentPane()
+      clearTimeout(this.autoNextTimer)
+      if (this.data.current < this.data.questions.length - 1) {
+        this.autoNextTimer = setTimeout(() => this.nextQuestion(), 300)
+      }
+    })
   },
 
   goQuestion(e) {
-    const current = Number(e.currentTarget.dataset.index)
+    const current = typeof e === 'number' ? e : Number(e.currentTarget.dataset.index)
+    this.setQuestion(current)
+  },
+
+  setQuestion(current) {
     const question = this.data.questions[current]
+    if (!question) return
+    const exam = Object.assign({}, this.data.exam, { current })
+    wx.setStorageSync('activeExam', exam)
     this.setData({
       current,
+      exam,
       currentAnswer: question ? (question.selected || this.data.answers[question.id] || '') : '',
       progressPercent: this.data.questions.length ? (current + 1) * 100 / this.data.questions.length : 0
     }, () => this.syncCurrentPane())
@@ -97,12 +120,45 @@ Page({
 
   goByOffset(offset) {
     const current = this.data.current + offset
-    const question = this.data.questions[current]
-    this.setData({
-      current,
-      currentAnswer: question ? (question.selected || this.data.answers[question.id] || '') : '',
-      progressPercent: this.data.questions.length ? (current + 1) * 100 / this.data.questions.length : 0
-    }, () => this.syncCurrentPane())
+    this.slideToQuestion(current, offset > 0 ? 'next' : 'prev')
+  },
+
+  slideToQuestion(index, direction) {
+    if (index < 0 || index >= this.data.questions.length || this.data.slideTrackClass) return
+    const currentPane = this.buildPane(this.data.current)
+    const targetPane = this.buildPane(index)
+    if (!currentPane || !targetPane) return
+    const panes = direction === 'next' ? [currentPane, targetPane] : [targetPane, currentPane]
+    const readyClass = direction === 'next' ? 'slide-ready-next' : 'slide-ready-prev'
+    const moveClass = direction === 'next' ? 'slide-moving slide-move-next' : 'slide-moving slide-move-prev'
+    clearTimeout(this.slideTimer)
+    clearTimeout(this.slideResetTimer)
+    this.setData({ slidePanes: panes, slideTrackClass: readyClass })
+    this.slideTimer = setTimeout(() => {
+      this.setData({ slideTrackClass: moveClass })
+      this.slideResetTimer = setTimeout(() => {
+        this.goQuestion(index)
+      }, 260)
+    }, 20)
+  },
+
+  onTouchStart(e) {
+    const touch = e.touches && e.touches[0]
+    if (!touch) return
+    this.touchStartX = touch.clientX || touch.pageX || 0
+    this.touchStartY = touch.clientY || touch.pageY || 0
+  },
+
+  onTouchEnd(e) {
+    const touch = e.changedTouches && e.changedTouches[0]
+    if (!touch) return
+    const endX = touch.clientX || touch.pageX || 0
+    const endY = touch.clientY || touch.pageY || 0
+    const deltaX = endX - (this.touchStartX || 0)
+    const deltaY = endY - (this.touchStartY || 0)
+    if (Math.abs(deltaX) < 60 || Math.abs(deltaX) < Math.abs(deltaY) * 1.4) return
+    if (deltaX < 0) this.nextQuestion()
+    else this.prevQuestion()
   },
 
   confirmSubmit() {
@@ -153,16 +209,24 @@ Page({
   },
 
   syncCurrentPane() {
-    const question = this.data.questions[this.data.current]
+    const pane = this.buildPane(this.data.current)
     this.setData({
-      currentPane: question ? {
-        key: `${question.id}-${this.data.current}`,
-        question,
-        selected: this.data.currentAnswer,
-        result: null,
-        wrongText: ''
-      } : null
+      currentPane: pane,
+      slidePanes: pane ? [pane] : [],
+      slideTrackClass: ''
     })
+  },
+
+  buildPane(index) {
+    const target = this.data.questions[index]
+    if (!target) return null
+    return {
+      key: `${target.id}-${index}`,
+      question: target,
+      selected: index === this.data.current ? this.data.currentAnswer : (target.selected || this.data.answers[target.id] || ''),
+      result: null,
+      wrongText: ''
+    }
   }
 })
 

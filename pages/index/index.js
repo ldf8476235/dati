@@ -2,6 +2,11 @@ const request = require('../../utils/request')
 const { requirePaid } = require('../../utils/payment')
 
 const DEFAULT_LEVEL_ID = 1
+const DEFAULT_STATS = {
+  totalQuestions: 0,
+  sequenceProgress: '0/0',
+  wrongCount: 0
+}
 
 const ENTRIES = [
   { key: 'sequence', icon: '/assets/icons/sequence.svg', title: '顺序练习', desc: '按题库顺序稳定推进', url: '/pages/practice/sequence/index' },
@@ -18,6 +23,9 @@ Page({
     levels: [],
     levelNames: [],
     levelIndex: 0,
+    homeStats: DEFAULT_STATS,
+    updateDate: '2026-05-11',
+    currentLevelName: '初级',
     currentType: 'single_choice',
     hasQuestionBank: true,
     entries: ENTRIES
@@ -41,29 +49,43 @@ Page({
       .then(() => request({ url: `/api/home?levelId=${requestedLevelId}` }))
       .then((home) => {
         const levels = home.levels || []
+        const stats = Object.assign({}, DEFAULT_STATS, home.stats || {})
         const preferredLevelId = levels.some((item) => item.id === requestedLevelId)
           ? requestedLevelId
           : (Number(home.currentLevelId) || DEFAULT_LEVEL_ID)
         const levelIndex = Math.max(0, levels.findIndex((item) => item.id === preferredLevelId))
         const currentLevelId = levels[levelIndex] ? levels[levelIndex].id : DEFAULT_LEVEL_ID
+        const currentLevelName = levels[levelIndex] ? levels[levelIndex].name : '初级'
         const currentType = wx.getStorageSync('currentQuestionType') || 'single_choice'
-        const totalQuestions = Number(home.stats && home.stats.totalQuestions) || 0
+        const totalQuestions = Number(stats.totalQuestions) || 0
         app.setStudyPrefs(currentLevelId, currentType)
         app.syncUser(Object.assign({}, app.globalData.user || wx.getStorageSync('user') || {}, { hasPaid: home.hasPaid }))
         this.setData({
           loading: false,
           home: Object.assign({}, home, {
-            progressPercent: this.progressPercent(home.stats),
+            stats,
+            progressPercent: this.progressPercent(stats),
             updateDate: '2026-05-11'
           }),
           levels,
           levelNames: levels.map((item) => item.name),
           levelIndex,
+          homeStats: stats,
+          updateDate: '2026-05-11',
+          currentLevelName,
           currentType,
           hasQuestionBank: totalQuestions > 0
         })
       })
-      .catch(() => this.setData({ loading: false }))
+      .catch(() => {
+        const fallbackHome = this.data.home
+        this.setData({
+          loading: false,
+          home: fallbackHome,
+          homeStats: fallbackHome && fallbackHome.stats ? fallbackHome.stats : DEFAULT_STATS,
+          updateDate: fallbackHome && fallbackHome.updateDate ? fallbackHome.updateDate : '2026-05-11'
+        })
+      })
   },
 
   onLevelChange(e) {

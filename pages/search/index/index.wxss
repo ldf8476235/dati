@@ -66,46 +66,8 @@ page {
   font-size: 30rpx;
 }
 
-.type-tabs {
-  height: 84rpx;
-  padding: 0 28rpx;
-  box-sizing: border-box;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.type-tab {
-  height: 72rpx;
-  min-width: 128rpx;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #111827;
-  font-size: 30rpx;
-  line-height: 40rpx;
-  font-weight: 500;
-}
-
-.type-tab.active {
-  color: #0b5bd3;
-  font-weight: 900;
-}
-
-.type-tab.active::after {
-  content: "";
-  position: absolute;
-  left: 26rpx;
-  right: 26rpx;
-  bottom: 0;
-  height: 6rpx;
-  border-radius: 999rpx;
-  background: #0b5bd3;
-}
-
 .result-scroll {
-  height: calc(100vh - 282rpx - env(safe-area-inset-top));
+  height: calc(100vh - 198rpx - env(safe-area-inset-top));
   box-sizing: border-box;
 }
 
@@ -160,8 +122,6 @@ page {
 .answer-top {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 20rpx;
 }
 
 .answer-line {
@@ -178,23 +138,6 @@ page {
 .answer-value {
   color: #0b5bd3;
   font-weight: 900;
-}
-
-.copy-button {
-  flex: none;
-  min-width: 116rpx;
-  min-height: 64rpx;
-  padding: 0 24rpx;
-  border-radius: 999rpx;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #111827;
-  background: #ffffff;
-  font-size: 28rpx;
-  line-height: 36rpx;
-  font-weight: 700;
 }
 
 .empty {
